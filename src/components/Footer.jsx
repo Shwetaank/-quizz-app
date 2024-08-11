@@ -37,7 +37,7 @@ const socials = [
 
 const Footer = () => {
   return (
-    <footer className="w-full h-auto py-4 flex flex-col items-center justify-center px-4 sm:px-8 md:px-12 lg:px-20 xl:px-48 text-xl bg-transparent shadow-md">
+    <footer className="w-full h-auto py-4 flex flex-col items-center justify-center px-4 sm:px-8 md:px-12 lg:px-20 xl:px-48 text-xl shadow-md">
       <div className="flex flex-col items-center w-full">
         {/* Social icons */}
         <div className="flex justify-center items-center w-full">

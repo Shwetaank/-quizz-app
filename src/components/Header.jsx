@@ -10,97 +10,101 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
   const handleClickOutside = (event) => {
-    if (menuRef.current && !menuRef.current.contains(event.target)) {
+    if (
+      menuRef.current &&
+      !menuRef.current.contains(event.target) &&
+      !event.target.closest(".clerk-user-button-dropdown")
+    ) {
       setIsMenuOpen(false);
     }
   };
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const navLinks = (
+    <>
+      <NavLink
+        to="/"
+        className={({ isActive }) =>
+          isActive ? "bg-black text-white p-2 rounded" : "hover:text-blue-500"
+        }
+      >
+        Home
+      </NavLink>
+      <NavLink
+        to="/my-quizzes"
+        className={({ isActive }) =>
+          isActive ? "bg-black text-white p-2 rounded" : "hover:text-blue-500"
+        }
+      >
+        My Quizzes
+      </NavLink>
+      <NavLink
+        to="/play-quiz"
+        className={({ isActive }) =>
+          isActive ? "bg-black text-white p-2 rounded" : "hover:text-blue-500"
+        }
+      >
+        Play Quiz
+      </NavLink>
+      <NavLink
+        to="/about-me"
+        className={({ isActive }) =>
+          isActive ? "bg-black text-white p-2 rounded" : "hover:text-blue-500"
+        }
+      >
+        About Me
+      </NavLink>
+    </>
+  );
 
   return (
     <nav className="h-20 flex items-center justify-between px-4 sm:px-8 md:px-12 lg:px-20 xl:px-48 text-xl shadow-md relative">
-      {/* Logo and Get Started Button for small screens */}
-      <div className="flex items-center gap-4">
-        <img src={img} alt="Almabetter logo" className="h-12 w-22 p-2" />
-        {!isSignedIn && (
-          <div className="sm:hidden">
-            <Link to="/auth/sign-in">
-              <Button className="bg-black rounded-md p-1 font-semibold">
-                Get Started
-              </Button>
-            </Link>
-          </div>
-        )}
+      {/* Logo */}
+      <div className="flex items-center">
+        <img src={img} alt="Logo" className="h-12 w-22 p-2" />
       </div>
 
-      {/* Hamburger icon for small screens */}
-      <div className="sm:hidden ml-auto">
-        <button
-          onClick={toggleMenu}
-          aria-expanded={isMenuOpen}
-          className="text-3xl"
-        >
-          {isMenuOpen ? <HiOutlineX /> : <HiOutlineMenu />}
-        </button>
+      {/* Buttons for small screens */}
+      <div className="flex items-center gap-4 ml-auto sm:hidden">
+        {isSignedIn ? (
+          <div className="transform transition-all duration-300 hover:scale-125 mr-4">
+            <UserButton className="shadow-lg border-2 border-transparent hover:border-blue-500" />
+          </div>
+        ) : (
+          <Link to="/auth/sign-in">
+            <Button className="bg-black rounded-md p-2 font-bold">
+              Get Started
+            </Button>
+          </Link>
+        )}
+        {isSignedIn && (
+          <button
+            onClick={toggleMenu}
+            aria-expanded={isMenuOpen}
+            className="text-3xl"
+          >
+            {isMenuOpen ? <HiOutlineX /> : <HiOutlineMenu />}
+          </button>
+        )}
       </div>
 
       {/* Links and user button for medium and larger screens */}
       <div className="hidden sm:flex items-center gap-20">
         {isSignedIn ? (
           <>
-            <div className="flex items-center justify-center gap-20 font-semibold">
-              <NavLink
-                to="/"
-                className={({ isActive }) =>
-                  isActive
-                    ? "bg-black text-white p-2 rounded"
-                    : "hover:text-blue-500"
-                }
-              >
-                Home
-              </NavLink>
-              <NavLink
-                to="/my-quizzes"
-                className={({ isActive }) =>
-                  isActive
-                    ? "bg-black text-white p-2 rounded"
-                    : "hover:text-blue-500"
-                }
-              >
-                My Quizzes
-              </NavLink>
-              <NavLink
-                to="/play-quiz"
-                className={({ isActive }) =>
-                  isActive
-                    ? "bg-black text-white p-2 rounded"
-                    : "hover:text-blue-500"
-                }
-              >
-                Play Quiz
-              </NavLink>
-              <NavLink
-                to="/about-me"
-                className={({ isActive }) =>
-                  isActive
-                    ? "bg-black text-white p-2 rounded"
-                    : "hover:text-blue-500"
-                }
-              >
-                About Me
-              </NavLink>
+            <div className="flex items-center gap-20 font-semibold">
+              {navLinks}
             </div>
-            <UserButton />
+            <div className="transform transition-all duration-300 hover:scale-125">
+              <UserButton className="shadow-lg border-2 border-transparent hover:border-blue-500" />
+            </div>
           </>
         ) : (
           <Link to="/auth/sign-in">
@@ -112,68 +116,13 @@ const Header = () => {
       </div>
 
       {/* Dropdown menu for small screens */}
-      {isMenuOpen && (
+      {isSignedIn && isMenuOpen && (
         <div
           ref={menuRef}
-          className="sm:hidden absolute z-40 top-20 left-0 w-full bg-white shadow-md"
+          className="sm:hidden absolute z-40 top-20 left-0 w-full bg-gradient-to-b from-blue-100 to-red-100 shadow-md"
         >
           <div className="flex flex-col items-center gap-4 p-4 font-semibold">
-            <NavLink
-              to="/"
-              onClick={toggleMenu}
-              className={({ isActive }) =>
-                isActive
-                  ? "bg-black text-white text-center p-2 rounded"
-                  : "hover:text-blue-500 w-full text-center"
-              }
-            >
-              Home
-            </NavLink>
-            <NavLink
-              to="/my-quizzes"
-              onClick={toggleMenu}
-              className={({ isActive }) =>
-                isActive
-                  ? "bg-black text-white text-center p-2 rounded"
-                  : "hover:text-blue-500 w-full text-center"
-              }
-            >
-              My Quizzes
-            </NavLink>
-            <NavLink
-              to="/play-quiz"
-              onClick={toggleMenu}
-              className={({ isActive }) =>
-                isActive
-                  ? "bg-black text-white text-center p-2 rounded"
-                  : "hover:text-blue-500 w-full text-center"
-              }
-            >
-              Play Quiz
-            </NavLink>
-            <NavLink
-              to="/about-me"
-              onClick={toggleMenu}
-              className={({ isActive }) =>
-                isActive
-                  ? "bg-black text-white text-center p-2 rounded"
-                  : "hover:text-blue-500 w-full text-center"
-              }
-            >
-              About Me
-            </NavLink>
-            {isSignedIn ? (
-              <UserButton />
-            ) : (
-              <Link to="/auth/sign-in" className="w-full">
-                <Button
-                  title="Click here to get started"
-                  className="bg-black w-full p-2 rounded-md font-bold text-center"
-                >
-                  Get Started
-                </Button>
-              </Link>
-            )}
+            {navLinks}
           </div>
         </div>
       )}

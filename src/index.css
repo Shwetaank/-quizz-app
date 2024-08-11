@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom transition utility for all properties */
 .transition-all {
   transition: all 0.3s ease;
+}
+
+/* Smooth scrolling behavior for internal links */
+html {
+  scroll-behavior: smooth;
 }
