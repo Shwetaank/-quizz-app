@@ -2,6 +2,7 @@ import { useUser } from "@clerk/clerk-react";
 import { Navigate, Outlet } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Spinner from "./components/Spinner";
 
 const App = () => {
   const { isLoaded, isSignedIn } = useUser();
@@ -9,8 +10,8 @@ const App = () => {
   // Display a loading state while authentication status is being loaded
   if (!isLoaded) {
     return (
-      <div className="w-screen h-screen flex items-center justify-center">
-        Loading...
+      <div className="w-screen h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-100 to-red-100">
+        <Spinner />
       </div>
     );
   }
