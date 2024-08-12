@@ -7,13 +7,12 @@ import SignInPage from "./auth/SignInPage.jsx";
 import Home from "./pages/Home";
 import AboutMe from "./pages/AboutMe";
 import { ClerkProvider } from "@clerk/clerk-react";
-
-// Import your publishable key
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 import PlayQuiz from "./pages/PlayQuiz";
 import MyQuizzes from "./pages/MyQuizzes";
 
-// routing
+// Import your publishable key
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
 const router = createBrowserRouter([
   {
     element: <App />,
@@ -36,7 +35,6 @@ const router = createBrowserRouter([
     path: "/",
     element: <Home />,
   },
-
   {
     path: "/auth/sign-in",
     element: <SignInPage />,

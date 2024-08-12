@@ -1,6 +1,9 @@
+@import 'flowbite/dist/flowbite.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 /* Custom transition utility for all properties */
 .transition-all {

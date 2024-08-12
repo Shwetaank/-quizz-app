@@ -32,31 +32,39 @@ const Header = () => {
       <NavLink
         to="/"
         className={({ isActive }) =>
-          isActive ? "bg-black text-white p-2 rounded" : "hover:text-blue-500"
+          isActive
+            ? "bg-gradient-to-r from-black to-gray-500 text-white p-2 rounded"
+            : "hover:text-blue-500"
         }
       >
         Home
       </NavLink>
       <NavLink
-        to="/my-quizzes"
-        className={({ isActive }) =>
-          isActive ? "bg-black text-white p-2 rounded" : "hover:text-blue-500"
-        }
-      >
-        My Quizzes
-      </NavLink>
-      <NavLink
         to="/play-quiz"
         className={({ isActive }) =>
-          isActive ? "bg-black text-white p-2 rounded" : "hover:text-blue-500"
+          isActive
+            ? "bg-gradient-to-r from-black to-gray-500 text-white p-2 rounded"
+            : "hover:text-blue-500"
         }
       >
         Play Quiz
       </NavLink>
       <NavLink
+        to="/my-quizzes"
+        className={({ isActive }) =>
+          isActive
+            ? "bg-gradient-to-r from-black to-gray-500 text-white p-2 rounded"
+            : "hover:text-blue-500"
+        }
+      >
+        My Quizzes
+      </NavLink>
+      <NavLink
         to="/about-me"
         className={({ isActive }) =>
-          isActive ? "bg-black text-white p-2 rounded" : "hover:text-blue-500"
+          isActive
+            ? "bg-gradient-to-r from-black to-gray-500 text-white p-2 rounded"
+            : "hover:text-blue-500"
         }
       >
         About Me
