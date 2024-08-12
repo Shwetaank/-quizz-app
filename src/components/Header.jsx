@@ -116,8 +116,8 @@ const Header = () => {
           </>
         ) : (
           <Link to="/auth/sign-in">
-            <Button className="bg-black rounded-md p-1 font-semibold">
-              Get Started
+            <Button color="dark" pill >
+              Login
             </Button>
           </Link>
         )}
