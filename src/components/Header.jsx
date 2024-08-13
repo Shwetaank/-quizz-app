@@ -50,6 +50,16 @@ const Header = () => {
         Play Quiz
       </NavLink>
       <NavLink
+        to="/create-quiz"
+        className={({ isActive }) =>
+          isActive
+            ? "bg-gradient-to-r from-black to-gray-500 text-white p-2 rounded"
+            : "hover:text-blue-500"
+        }
+      >
+        Create Quiz
+      </NavLink>
+      <NavLink
         to="/my-quizzes"
         className={({ isActive }) =>
           isActive

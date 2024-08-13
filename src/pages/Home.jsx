@@ -29,7 +29,7 @@ const cards = [
     imageSrc: img3,
     title: "Surprise Quiz",
     description:
-      "Immerse yourself in the excitement of our Surprise Quiz, powered by the Trivia API. Put your skills to the test with a diverse array of unpredictable questions.",
+      "Immerse yourself in the excitement of our Surprise Quiz, powered by the <strong>Trivia API</strong>. Put your skills to the test with a diverse array of unpredictable questions.",
   },
 ];
 
@@ -70,9 +70,10 @@ const Home = () => {
                     <h5 className="text-xl font-bold tracking-tight flex justify-center hover:underline">
                       {card.title}
                     </h5>
-                    <p className="font-normal text-gray-700 dark:text-gray-400 mt-2 text-justify">
-                      {card.description}
-                    </p>
+                    <p
+                      className="font-normal text-gray-700 dark:text-gray-400 mt-2 text-justify"
+                      dangerouslySetInnerHTML={{ __html: card.description }}
+                    />
                     <div className="mt-4 flex justify-end">
                       <Link to={card.to}>
                         <Button
