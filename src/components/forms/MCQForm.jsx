@@ -8,13 +8,14 @@ const MCQForm = ({
   updateOption,
   deleteOption,
   setCurrentQuestion,
+  currentQuestion,
 }) => {
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col items-center p-6 border rounded-lg shadow-lg bg-white w-full max-w-4xl mx-auto">
       <TextInput
         type="text"
         placeholder="Enter question (max 20 characters)"
-        value={correctAnswer}
+        value={currentQuestion.question}
         onChange={(e) =>
           setCurrentQuestion((prev) => ({
             ...prev,
@@ -22,23 +23,36 @@ const MCQForm = ({
           }))
         }
         required
+        className="mb-4 w-full"
       />
 
-      {options.map((option, index) => (
-        <div key={index} className="flex items-center space-x-2">
-          <TextInput
-            type="text"
-            value={option}
-            onChange={(e) => updateOption(index, e.target.value)}
-            placeholder={`Option ${index + 1}`}
-          />
-          <Button color="red" onClick={() => deleteOption(index)}>
-            Delete
-          </Button>
-        </div>
-      ))}
+      <div className="flex flex-col space-y-4 w-full">
+        {options.map((option, index) => (
+          <div key={index} className="flex items-center space-x-2 w-full">
+            <TextInput
+              type="text"
+              value={option}
+              onChange={(e) => updateOption(index, e.target.value)}
+              placeholder={`Option ${index + 1}`}
+              className="flex-1"
+            />
+            <Button
+              gradientMonochrome="purple"
+              onClick={() => deleteOption(index)}
+              className="ml-2"
+            >
+              Delete
+            </Button>
+          </div>
+        ))}
+      </div>
 
-      <Button onClick={addOption} disabled={options.length >= 4}>
+      <Button
+        gradientMonochrome="purple"
+        onClick={addOption}
+        disabled={options.length >= 4}
+        className="mt-4 w-full"
+      >
         Add Option
       </Button>
 
@@ -52,6 +66,7 @@ const MCQForm = ({
           }))
         }
         required
+        className="mt-4 w-full"
       >
         <option value="">Select Correct Answer</option>
         {options.map((_, index) => (
@@ -71,6 +86,11 @@ MCQForm.propTypes = {
   updateOption: PropTypes.func.isRequired,
   deleteOption: PropTypes.func.isRequired,
   setCurrentQuestion: PropTypes.func.isRequired,
+  currentQuestion: PropTypes.shape({
+    question: PropTypes.string.isRequired,
+    options: PropTypes.arrayOf(PropTypes.string).isRequired,
+    correctAnswer: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default MCQForm;

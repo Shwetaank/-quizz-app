@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Button, Alert, TextInput, Textarea } from "flowbite-react";
+import { Button, Alert, Label, TextInput, Textarea } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 import { addQuiz } from "../store/quizSlice";
 import QuestionTypeModal from "../components/QuestionTypeModal";
@@ -68,7 +68,7 @@ const CreateQuiz = () => {
 
   return (
     <div className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl">
-      <main className="w-full max-w-7xl border border-gray-300 rounded-lg shadow-md">
+      <main className="w-full max-w-7xl border border-gray-300 rounded-lg shadow-md p-8">
         <TitleSwitcher />
 
         {alertMessage && (
@@ -88,20 +88,28 @@ const CreateQuiz = () => {
         />
 
         {selectedQuestionType && (
-          <div className="mb-8 space-y-4">
-            <TextInput
-              className="mb-4"
-              type="number"
-              name="numQuestions"
-              placeholder="Enter number of questions (5-15)"
-              value={numQuestions}
-              onChange={(e) =>
-                setNumQuestions(Math.min(15, Math.max(5, e.target.value)))
-              }
-              min={5}
-              max={15}
-              required
-            />
+          <div className="flex flex-col items-center">
+            <div className="flex items-center space-x-4 mb-4">
+              <Label
+                htmlFor="numQuestions"
+                color="gray"
+                value="Enter 5–15 questions to Complete Quiz"
+              />
+              <TextInput
+                id="numQuestions"
+                className="w-32"
+                type="number"
+                name="numQuestions"
+                placeholder="Enter number of questions"
+                value={numQuestions}
+                onChange={(e) =>
+                  setNumQuestions(Math.min(15, Math.max(5, e.target.value)))
+                }
+                min={5}
+                max={15}
+                required
+              />
+            </div>
             <TextInput
               className="mb-4"
               type="text"
@@ -117,18 +125,20 @@ const CreateQuiz = () => {
               required
             />
             <Textarea
-              className="mb-4"
+              className="mb-4 border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-500"
               name="description"
-              placeholder="Enter quiz description (optional)"
+              placeholder="Describe the quiz (max 20 characters)"
               value={currentQuestion.description}
               onChange={(e) =>
                 setCurrentQuestion({
                   ...currentQuestion,
-                  description: e.target.value.slice(0, 50),
+                  description: e.target.value.slice(0, 20),
                 })
               }
-              maxLength={50}
+              maxLength={20}
+              rows={2} // Sets the height to approximately 3 rows
             />
+
             <MCQForm
               options={currentQuestion.options}
               correctAnswer={currentQuestion.correctAnswer}
@@ -153,12 +163,19 @@ const CreateQuiz = () => {
                 }))
               }
               setCurrentQuestion={setCurrentQuestion}
+              currentQuestion={currentQuestion}
             />
-            <div className="flex space-x-4">
-              <Button onClick={handleSaveQuestion}>Save and Go to Next Question</Button>
+            <div className="flex justify-between w-full mt-8 space-x-4">
+              <Button onClick={handleSaveQuestion} gradientMonochrome="purple">
+                Save & Next
+              </Button>
               <Button
                 onClick={handleSubmitQuiz}
+                gradientMonochrome="purple"
                 disabled={questions.length < 5}
+                className={`transition-colors duration-300 ${
+                  questions.length < 5 ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
                 Complete Quiz
               </Button>
