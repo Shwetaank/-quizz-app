@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
-import { Button, TextInput, Select } from "flowbite-react";
+import { Button, TextInput, Select, Alert } from "flowbite-react";
+import { useState } from "react";
 
 const MCQForm = ({
   options,
@@ -10,6 +11,36 @@ const MCQForm = ({
   setCurrentQuestion,
   currentQuestion,
 }) => {
+  const [warningMessage, setWarningMessage] = useState("");
+
+  const handleOptionChange = (index, value) => {
+    if (options.includes(value) && value !== options[index]) {
+      setWarningMessage("Option is already in the list.");
+    } else {
+      setWarningMessage("");
+      updateOption(index, value);
+    }
+  };
+
+  const handleAddOption = () => {
+    if (options.length < 4) {
+      const newOption = "";
+      if (options.includes(newOption)) {
+        setWarningMessage("This option already exists.");
+      } else {
+        setWarningMessage("");
+        addOption();
+      }
+    }
+  };
+
+  const handleCorrectAnswerChange = (e) => {
+    setCurrentQuestion((prev) => ({
+      ...prev,
+      correctAnswer: e.target.value,
+    }));
+  };
+
   return (
     <div className="flex flex-col items-center p-6 border rounded-lg shadow-lg bg-white w-full max-w-4xl mx-auto">
       <TextInput
@@ -26,13 +57,19 @@ const MCQForm = ({
         className="mb-4 w-full"
       />
 
+      {warningMessage && (
+        <Alert color="failure" className="mb-4">
+          {warningMessage}
+        </Alert>
+      )}
+
       <div className="flex flex-col space-y-4 w-full">
         {options.map((option, index) => (
           <div key={index} className="flex items-center space-x-2 w-full">
             <TextInput
               type="text"
               value={option}
-              onChange={(e) => updateOption(index, e.target.value)}
+              onChange={(e) => handleOptionChange(index, e.target.value)}
               placeholder={`Option ${index + 1}`}
               className="flex-1"
             />
@@ -49,7 +86,7 @@ const MCQForm = ({
 
       <Button
         gradientMonochrome="purple"
-        onClick={addOption}
+        onClick={handleAddOption}
         disabled={options.length >= 4}
         className="mt-4 w-full"
       >
@@ -59,12 +96,7 @@ const MCQForm = ({
       <Select
         name="correctAnswer"
         value={correctAnswer}
-        onChange={(e) =>
-          setCurrentQuestion((prev) => ({
-            ...prev,
-            correctAnswer: e.target.value,
-          }))
-        }
+        onChange={handleCorrectAnswerChange}
         required
         className="mt-4 w-full"
       >

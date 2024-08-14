@@ -12,7 +12,7 @@ const quizSlice = createSlice({
   initialState,
   reducers: {
     addQuiz(state, action) {
-      state.quizzes.push(action.payload);
+      state.quizzes.push(action.payload.quiz);
       localStorage.setItem("quizzes", JSON.stringify(state.quizzes));
     },
     deleteQuiz(state, action) {
@@ -34,6 +34,11 @@ const quizSlice = createSlice({
       state.currentQuiz = null;
       state.userAnswers = {};
     },
+    toggleQuizStatus(state, action) {
+      const { index, status } = action.payload;
+      state.quizzes[index].active = status;
+      localStorage.setItem("quizzes", JSON.stringify(state.quizzes));
+    },
   },
 });
 
@@ -44,6 +49,7 @@ export const {
   setCurrentQuiz,
   setUserAnswer,
   resetQuizState,
+  toggleQuizStatus,
 } = quizSlice.actions;
 
 export default quizSlice.reducer;

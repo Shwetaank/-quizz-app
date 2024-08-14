@@ -1,22 +1,26 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Button, Alert, Label, TextInput, Textarea } from "flowbite-react";
+import { Button, Alert, TextInput, Textarea } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 import { addQuiz } from "../store/quizSlice";
 import QuestionTypeModal from "../components/QuestionTypeModal";
 import MCQForm from "../components/forms/MCQForm";
+import ShortAnswerForm from "../components/forms/ShortAnswerForm";
+import DescriptionForm from "../components/forms/DescriptionForm";
 import TitleSwitcher from "../components/titleSwitcher/TitleSwitcher";
 
 const CreateQuiz = () => {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [selectedQuestionType, setSelectedQuestionType] = useState("");
-  const [numQuestions, setNumQuestions] = useState(5);
-  const [currentQuestion, setCurrentQuestion] = useState({
+  const [quizDetails, setQuizDetails] = useState({
     title: "",
     description: "",
+  });
+  const [currentQuestion, setCurrentQuestion] = useState({
     question: "",
     options: [],
     correctAnswer: "",
+    description: "",
   });
   const [questions, setQuestions] = useState([]);
   const [alertMessage, setAlertMessage] = useState("");
@@ -31,37 +35,51 @@ const CreateQuiz = () => {
   const handleSaveQuestion = () => {
     if (
       currentQuestion.question &&
-      currentQuestion.options.length >= 2 &&
-      currentQuestion.correctAnswer !== ""
+      (selectedQuestionType === "MCQ" ? currentQuestion.options.length >= 2 && currentQuestion.correctAnswer !== "" : true)
     ) {
-      setQuestions([...questions, currentQuestion]);
+      setQuestions([...questions, { ...currentQuestion, number: questions.length + 1, createdDate: new Date().toISOString() }]);
       setCurrentQuestion({
-        ...currentQuestion,
         question: "",
         options: [],
         correctAnswer: "",
+        description: "",
       });
       setAlertMessage("Question added successfully.");
       setAlertType("success");
     } else {
-      setAlertMessage("Please fill all required fields.");
+      setAlertMessage("Please fill all required fields correctly.");
       setAlertType("failure");
     }
   };
 
   const handleSubmitQuiz = () => {
-    if (questions.length >= 5 && questions.length <= numQuestions) {
+    if (questions.length >= 2 && questions.length <= 15) {
       dispatch(
         addQuiz({
-          title: currentQuestion.title,
-          description: currentQuestion.description,
-          questions,
+          index: -1,
+          quiz: {
+            title: quizDetails.title,
+            description: quizDetails.description,
+            questions,
+          },
         })
       );
+      // Reset quiz details and questions
+      setQuizDetails({
+        title: "",
+        description: "",
+      });
+      setQuestions([]);
+      setCurrentQuestion({
+        question: "",
+        options: [],
+        correctAnswer: "",
+        description: "",
+      });
       setAlertMessage("Quiz submitted successfully.");
       setAlertType("success");
     } else {
-      setAlertMessage("Please add at least 5 questions.");
+      setAlertMessage("Please add at least 2 questions.");
       setAlertType("failure");
     }
   };
@@ -89,82 +107,80 @@ const CreateQuiz = () => {
 
         {selectedQuestionType && (
           <div className="flex flex-col items-center">
-            <div className="flex items-center space-x-4 mb-4">
-              <Label
-                htmlFor="numQuestions"
-                color="gray"
-                value="Enter 5–15 questions to Complete Quiz"
-              />
-              <TextInput
-                id="numQuestions"
-                className="w-32"
-                type="number"
-                name="numQuestions"
-                placeholder="Enter number of questions"
-                value={numQuestions}
-                onChange={(e) =>
-                  setNumQuestions(Math.min(15, Math.max(5, e.target.value)))
-                }
-                min={5}
-                max={15}
-                required
-              />
-            </div>
             <TextInput
-              className="mb-4"
+              className="mb-4 border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-500 w-full max-w-4xl mx-auto"
               type="text"
               name="title"
               placeholder="Enter quiz title"
-              value={currentQuestion.title}
+              value={quizDetails.title}
               onChange={(e) =>
-                setCurrentQuestion({
-                  ...currentQuestion,
+                setQuizDetails({
+                  ...quizDetails,
                   title: e.target.value,
                 })
               }
               required
             />
+
             <Textarea
-              className="mb-4 border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-500"
+              className="mb-4 border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-500 w-full max-w-4xl mx-auto"
               name="description"
               placeholder="Describe the quiz (max 20 characters)"
-              value={currentQuestion.description}
+              value={quizDetails.description}
               onChange={(e) =>
-                setCurrentQuestion({
-                  ...currentQuestion,
+                setQuizDetails({
+                  ...quizDetails,
                   description: e.target.value.slice(0, 20),
                 })
               }
               maxLength={20}
-              rows={2} // Sets the height to approximately 3 rows
+              rows={2}
             />
 
-            <MCQForm
-              options={currentQuestion.options}
-              correctAnswer={currentQuestion.correctAnswer}
-              addOption={() =>
-                setCurrentQuestion((prev) => ({
-                  ...prev,
-                  options: [...prev.options, ""],
-                }))
-              }
-              updateOption={(index, value) =>
-                setCurrentQuestion((prev) => ({
-                  ...prev,
-                  options: prev.options.map((opt, i) =>
-                    i === index ? value : opt
-                  ),
-                }))
-              }
-              deleteOption={(index) =>
-                setCurrentQuestion((prev) => ({
-                  ...prev,
-                  options: prev.options.filter((_, i) => i !== index),
-                }))
-              }
-              setCurrentQuestion={setCurrentQuestion}
-              currentQuestion={currentQuestion}
-            />
+            {selectedQuestionType === "MCQ" && (
+              <MCQForm
+                options={currentQuestion.options}
+                correctAnswer={currentQuestion.correctAnswer}
+                addOption={() =>
+                  setCurrentQuestion((prev) => ({
+                    ...prev,
+                    options: [...prev.options, ""],
+                  }))
+                }
+                updateOption={(index, value) =>
+                  setCurrentQuestion((prev) => ({
+                    ...prev,
+                    options: prev.options.map((opt, i) =>
+                      i === index ? value : opt
+                    ),
+                  }))
+                }
+                deleteOption={(index) =>
+                  setCurrentQuestion((prev) => ({
+                    ...prev,
+                    options: prev.options.filter((_, i) => i !== index),
+                  }))
+                }
+                setCurrentQuestion={setCurrentQuestion}
+                currentQuestion={currentQuestion}
+              />
+            )}
+
+            {selectedQuestionType === "Short Answer" && (
+              <ShortAnswerForm
+                question={currentQuestion.question}
+                setCurrentQuestion={setCurrentQuestion}
+              />
+            )}
+
+            {selectedQuestionType === "Description" && (
+              <DescriptionForm
+                question={currentQuestion.question}
+                description={currentQuestion.description}
+                setCurrentQuestion={setCurrentQuestion}
+              />
+            )}
+
             <div className="flex justify-between w-full mt-8 space-x-4">
               <Button onClick={handleSaveQuestion} gradientMonochrome="purple">
                 Save & Next
@@ -172,12 +188,9 @@ const CreateQuiz = () => {
               <Button
                 onClick={handleSubmitQuiz}
                 gradientMonochrome="purple"
-                disabled={questions.length < 5}
-                className={`transition-colors duration-300 ${
-                  questions.length < 5 ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                disabled={questions.length === 0}
               >
-                Complete Quiz
+                Submit Quiz
               </Button>
             </div>
           </div>
