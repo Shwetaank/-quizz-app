@@ -22,14 +22,10 @@ const QuestionTypeModal = ({ isOpen, onClose, onSelectType, selectedType }) => {
   }, [isOpen, onClose]);
 
   return (
-    <Modal
-      show={isOpen}
-      onClose={onClose}
-      
-    >
+    <Modal show={isOpen} onClose={onClose}>
       <div
         ref={modalRef}
-        className=" sm:h- bg-white rounded-lg shadow-lg"
+        className="bg-white rounded-lg shadow-lg"
       >
         <Modal.Header className="text-center text-lg font-semibold">
           Select Question Type

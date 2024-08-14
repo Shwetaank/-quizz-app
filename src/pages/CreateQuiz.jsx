@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Button, Alert, TextInput, Textarea } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
@@ -20,12 +20,24 @@ const CreateQuiz = () => {
     question: "",
     options: [],
     correctAnswer: "",
-    description: "",
   });
   const [questions, setQuestions] = useState([]);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("failure");
+  const [showAlert, setShowAlert] = useState(false); // New state for alert visibility
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (alertMessage) {
+      setShowAlert(true);
+      const timer = setTimeout(() => {
+        setShowAlert(false);
+        setAlertMessage(""); // Clear alert message
+      }, 4000); // Hide alert after 4 seconds
+
+      return () => clearTimeout(timer); // Clean up the timer
+    }
+  }, [alertMessage]);
 
   const handleQuestionTypeChange = (type) => {
     setSelectedQuestionType(type);
@@ -35,14 +47,27 @@ const CreateQuiz = () => {
   const handleSaveQuestion = () => {
     if (
       currentQuestion.question &&
-      (selectedQuestionType === "MCQ" ? currentQuestion.options.length >= 2 && currentQuestion.correctAnswer !== "" : true)
+      (selectedQuestionType === "mcq-single"
+        ? currentQuestion.options.length >= 2 &&
+          currentQuestion.correctAnswer !== ""
+        : true) &&
+      (selectedQuestionType === "mcq-single"
+        ? currentQuestion.options[currentQuestion.correctAnswer] !== undefined
+        : true)
     ) {
-      setQuestions([...questions, { ...currentQuestion, number: questions.length + 1, createdDate: new Date().toISOString() }]);
+      setQuestions([
+        ...questions,
+        {
+          ...currentQuestion,
+          number: questions.length + 1,
+          type: selectedQuestionType,
+          createdDate: new Date().toISOString(),
+        },
+      ]);
       setCurrentQuestion({
         question: "",
         options: [],
         correctAnswer: "",
-        description: "",
       });
       setAlertMessage("Question added successfully.");
       setAlertType("success");
@@ -56,11 +81,17 @@ const CreateQuiz = () => {
     if (questions.length >= 2 && questions.length <= 15) {
       dispatch(
         addQuiz({
-          index: -1,
+          index: -1, // Example index; adjust as needed
           quiz: {
             title: quizDetails.title,
             description: quizDetails.description,
-            questions,
+            questions: questions.map(question => ({
+              number: question.number,
+              question: question.question,
+              type: question.type,
+              options: question.options, // Include options if available
+              correctAnswer: question.correctAnswer // Include correct answer if available
+            })),
           },
         })
       );
@@ -74,7 +105,6 @@ const CreateQuiz = () => {
         question: "",
         options: [],
         correctAnswer: "",
-        description: "",
       });
       setAlertMessage("Quiz submitted successfully.");
       setAlertType("success");
@@ -89,7 +119,7 @@ const CreateQuiz = () => {
       <main className="w-full max-w-7xl border border-gray-300 rounded-lg shadow-md p-8">
         <TitleSwitcher />
 
-        {alertMessage && (
+        {showAlert && alertMessage && (
           <Alert color={alertType} icon={HiInformationCircle} className="mb-4">
             <span className="font-medium">
               {alertType === "success" ? "Success!" : "Error!"}
@@ -137,7 +167,7 @@ const CreateQuiz = () => {
               rows={2}
             />
 
-            {selectedQuestionType === "MCQ" && (
+            {selectedQuestionType === "mcq-single" && (
               <MCQForm
                 options={currentQuestion.options}
                 correctAnswer={currentQuestion.correctAnswer}
@@ -166,18 +196,27 @@ const CreateQuiz = () => {
               />
             )}
 
-            {selectedQuestionType === "Short Answer" && (
+            {selectedQuestionType === "short-answer" && (
               <ShortAnswerForm
-                question={currentQuestion.question}
-                setCurrentQuestion={setCurrentQuestion}
+                answer={currentQuestion.question}
+                setCurrentQuestion={(newQuestion) =>
+                  setCurrentQuestion((prev) => ({
+                    ...prev,
+                    question: newQuestion.question,
+                  }))
+                }
               />
             )}
 
-            {selectedQuestionType === "Description" && (
+            {selectedQuestionType === "description" && (
               <DescriptionForm
-                question={currentQuestion.question}
-                description={currentQuestion.description}
-                setCurrentQuestion={setCurrentQuestion}
+                description={currentQuestion.question}
+                setCurrentQuestion={(newQuestion) =>
+                  setCurrentQuestion((prev) => ({
+                    ...prev,
+                    question: newQuestion.question,
+                  }))
+                }
               />
             )}
 

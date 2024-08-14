@@ -1,39 +1,42 @@
 import PropTypes from "prop-types";
-import { TextInput, Alert } from "flowbite-react";
-import { useState } from "react";
+import { TextInput } from "flowbite-react";
 
-const ShortAnswerForm = ({ question, setCurrentQuestion }) => {
-  const [warningMessage, setWarningMessage] = useState("");
-
-  const handleQuestionChange = (e) => {
-    setCurrentQuestion((prev) => ({
-      ...prev,
-      question: e.target.value,
-    }));
-  };
-
+const ShortAnswerForm = ({ question, answer, setCurrentQuestion }) => {
   return (
     <div className="flex flex-col items-center p-6 border rounded-lg shadow-lg bg-white w-full max-w-4xl mx-auto">
       <TextInput
         type="text"
-        placeholder="Enter the short answer question"
+        placeholder="Enter the question"
         value={question}
-        onChange={handleQuestionChange}
+        onChange={(e) =>
+          setCurrentQuestion((prev) => ({
+            ...prev,
+            question: e.target.value,
+          }))
+        }
         required
         className="mb-4 w-full"
       />
-
-      {warningMessage && (
-        <Alert color="failure" className="mb-4">
-          {warningMessage}
-        </Alert>
-      )}
+      <TextInput
+        type="text"
+        placeholder="Enter the short answer"
+        value={answer}
+        onChange={(e) =>
+          setCurrentQuestion((prev) => ({
+            ...prev,
+            answer: e.target.value.slice(0, 10),
+          }))
+        }
+        required
+        className="mb-4 w-full"
+      />
     </div>
   );
 };
 
 ShortAnswerForm.propTypes = {
   question: PropTypes.string.isRequired,
+  answer: PropTypes.string.isRequired,
   setCurrentQuestion: PropTypes.func.isRequired,
 };
 

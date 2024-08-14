@@ -12,7 +12,9 @@ const quizSlice = createSlice({
   initialState,
   reducers: {
     addQuiz(state, action) {
-      state.quizzes.push(action.payload.quiz);
+      // Initialize active status for new quizzes if it's missing
+      const newQuiz = { ...action.payload.quiz, active: action.payload.quiz.active || true };
+      state.quizzes.push(newQuiz);
       localStorage.setItem("quizzes", JSON.stringify(state.quizzes));
     },
     deleteQuiz(state, action) {
@@ -36,8 +38,10 @@ const quizSlice = createSlice({
     },
     toggleQuizStatus(state, action) {
       const { index, status } = action.payload;
-      state.quizzes[index].active = status;
-      localStorage.setItem("quizzes", JSON.stringify(state.quizzes));
+      if (state.quizzes[index]) {
+        state.quizzes[index].active = status;
+        localStorage.setItem("quizzes", JSON.stringify(state.quizzes));
+      }
     },
   },
 });
