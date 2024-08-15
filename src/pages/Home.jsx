@@ -67,14 +67,14 @@ const Home = () => {
                     className="w-full h-40 object-cover rounded-t-lg"
                   />
                   <div className="p-4">
-                    <h5 className="text-xl font-bold tracking-tight flex justify-center hover:underline">
+                    <h5 className="text-xl font-bold tracking-tight flex justify-start  cursor-pointer hover:underline">
                       {card.title}
                     </h5>
                     <p
                       className="font-normal text-gray-700 dark:text-gray-400 mt-2 text-justify"
                       dangerouslySetInnerHTML={{ __html: card.description }}
                     />
-                    <div className="mt-4 flex justify-end">
+                    <div className="mt-8 flex justify-center">
                       <Link to={card.to}>
                         <Button
                           gradientMonochrome="purple"

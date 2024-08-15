@@ -19,7 +19,7 @@ const ShortAnswerForm = ({ question, answer, setCurrentQuestion }) => {
       />
       <TextInput
         type="text"
-        placeholder="Enter the short answer"
+        placeholder="Enter the short answer (max 10 characters)"
         value={answer}
         onChange={(e) =>
           setCurrentQuestion((prev) => ({

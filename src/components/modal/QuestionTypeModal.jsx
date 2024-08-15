@@ -22,7 +22,11 @@ const QuestionTypeModal = ({ isOpen, onClose, onSelectType, selectedType }) => {
   }, [isOpen, onClose]);
 
   return (
-    <Modal show={isOpen} onClose={onClose}>
+    <Modal
+      show={isOpen}
+      onClose={onClose}
+      className="bg-transparent backdrop-blur-sm"
+    >
       <div
         ref={modalRef}
         className="bg-white rounded-lg shadow-lg"
@@ -47,14 +51,6 @@ const QuestionTypeModal = ({ isOpen, onClose, onSelectType, selectedType }) => {
               className="w-full text-left"
             >
               Short Answer (2 words)
-            </Button>
-            <Button
-              gradientMonochrome="purple"
-              onClick={() => onSelectType("description")}
-              color={selectedType === "description" ? "primary" : "light"}
-              className="w-full text-left"
-            >
-              Description (2-4 sentences)
             </Button>
           </div>
         </Modal.Body>

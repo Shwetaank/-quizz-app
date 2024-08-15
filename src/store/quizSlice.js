@@ -1,5 +1,5 @@
-// src/store/quizSlice.js
 import { createSlice } from "@reduxjs/toolkit";
+import { nanoid } from "nanoid";
 
 const initialState = {
   quizzes: [],
@@ -12,13 +12,13 @@ const quizSlice = createSlice({
   initialState,
   reducers: {
     addQuiz(state, action) {
-      // Initialize active status for new quizzes if it's missing
-      const newQuiz = { ...action.payload.quiz, active: action.payload.quiz.active || true };
+      // Assign unique ID to each quiz
+      const newQuiz = { ...action.payload.quiz, id: nanoid(), active: action.payload.quiz.active ?? true };
       state.quizzes.push(newQuiz);
       localStorage.setItem("quizzes", JSON.stringify(state.quizzes));
     },
     deleteQuiz(state, action) {
-      state.quizzes = state.quizzes.filter((_, index) => index !== action.payload);
+      state.quizzes = state.quizzes.filter((quiz) => quiz.id !== action.payload);
       localStorage.setItem("quizzes", JSON.stringify(state.quizzes));
     },
     loadQuizzes(state) {
@@ -26,7 +26,7 @@ const quizSlice = createSlice({
       state.quizzes = savedQuizzes;
     },
     setCurrentQuiz(state, action) {
-      state.currentQuiz = action.payload;
+      state.currentQuiz = state.quizzes.find(quiz => quiz.id === action.payload);
     },
     setUserAnswer(state, action) {
       const { questionIndex, answer } = action.payload;
@@ -37,9 +37,10 @@ const quizSlice = createSlice({
       state.userAnswers = {};
     },
     toggleQuizStatus(state, action) {
-      const { index, status } = action.payload;
-      if (state.quizzes[index]) {
-        state.quizzes[index].active = status;
+      const { id, status } = action.payload;
+      const quiz = state.quizzes.find(quiz => quiz.id === id);
+      if (quiz) {
+        quiz.active = status;
         localStorage.setItem("quizzes", JSON.stringify(state.quizzes));
       }
     },

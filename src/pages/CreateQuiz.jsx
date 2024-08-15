@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Button, Alert, TextInput, Textarea } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
+import { nanoid } from "nanoid";
 import { addQuiz } from "../store/quizSlice";
-import QuestionTypeModal from "../components/QuestionTypeModal";
+import QuestionTypeModal from "../components/modal/QuestionTypeModal";
 import MCQForm from "../components/forms/MCQForm";
 import ShortAnswerForm from "../components/forms/ShortAnswerForm";
-import DescriptionForm from "../components/forms/DescriptionForm";
 import TitleSwitcher from "../components/titleSwitcher/TitleSwitcher";
 
 const CreateQuiz = () => {
@@ -20,22 +20,24 @@ const CreateQuiz = () => {
     question: "",
     options: [],
     correctAnswer: "",
+    answer: "",
   });
   const [questions, setQuestions] = useState([]);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("failure");
-  const [showAlert, setShowAlert] = useState(false); // New state for alert visibility
+  const [showAlert, setShowAlert] = useState(false);
   const dispatch = useDispatch();
+  const currentQuestionNumber = questions.length + 1;
 
   useEffect(() => {
     if (alertMessage) {
       setShowAlert(true);
       const timer = setTimeout(() => {
         setShowAlert(false);
-        setAlertMessage(""); // Clear alert message
-      }, 4000); // Hide alert after 4 seconds
+        setAlertMessage("");
+      }, 4000);
 
-      return () => clearTimeout(timer); // Clean up the timer
+      return () => clearTimeout(timer);
     }
   }, [alertMessage]);
 
@@ -45,22 +47,32 @@ const CreateQuiz = () => {
   };
 
   const handleSaveQuestion = () => {
+    const isMCQValid =
+      selectedQuestionType === "mcq-single"
+        ? currentQuestion.options.length >= 2 &&
+          currentQuestion.correctAnswer !== "" &&
+          currentQuestion.options[currentQuestion.correctAnswer] !== undefined
+        : true;
+
+    const isShortAnswerValid =
+      selectedQuestionType === "short-answer" &&
+      currentQuestion.question !== "" &&
+      currentQuestion.answer !== "";
+
     if (
       currentQuestion.question &&
-      (selectedQuestionType === "mcq-single"
-        ? currentQuestion.options.length >= 2 &&
-          currentQuestion.correctAnswer !== ""
-        : true) &&
-      (selectedQuestionType === "mcq-single"
-        ? currentQuestion.options[currentQuestion.correctAnswer] !== undefined
-        : true)
+      (isMCQValid || isShortAnswerValid)
     ) {
       setQuestions([
         ...questions,
         {
-          ...currentQuestion,
-          number: questions.length + 1,
+          id: nanoid(), // Assign unique ID to each question
+          number: currentQuestionNumber,
+          question: currentQuestion.question,
           type: selectedQuestionType,
+          options: selectedQuestionType === "mcq-single" ? currentQuestion.options : [],
+          correctAnswer: selectedQuestionType === "mcq-single" ? currentQuestion.correctAnswer : "",
+          answer: selectedQuestionType === "short-answer" ? currentQuestion.answer : "",
           createdDate: new Date().toISOString(),
         },
       ]);
@@ -68,6 +80,7 @@ const CreateQuiz = () => {
         question: "",
         options: [],
         correctAnswer: "",
+        answer: "",
       });
       setAlertMessage("Question added successfully.");
       setAlertType("success");
@@ -78,40 +91,53 @@ const CreateQuiz = () => {
   };
 
   const handleSubmitQuiz = () => {
-    if (questions.length >= 2 && questions.length <= 15) {
-      dispatch(
-        addQuiz({
-          index: -1, // Example index; adjust as needed
-          quiz: {
-            title: quizDetails.title,
-            description: quizDetails.description,
-            questions: questions.map(question => ({
-              number: question.number,
-              question: question.question,
-              type: question.type,
-              options: question.options, // Include options if available
-              correctAnswer: question.correctAnswer // Include correct answer if available
-            })),
-          },
-        })
-      );
-      // Reset quiz details and questions
-      setQuizDetails({
-        title: "",
-        description: "",
-      });
-      setQuestions([]);
-      setCurrentQuestion({
-        question: "",
-        options: [],
-        correctAnswer: "",
-      });
-      setAlertMessage("Quiz submitted successfully.");
-      setAlertType("success");
-    } else {
-      setAlertMessage("Please add at least 2 questions.");
+    if (!quizDetails.title.trim()) {
+      setAlertMessage("Please provide a quiz title.");
       setAlertType("failure");
+      return;
     }
+
+    if (questions.length < 2 || questions.length > 10) {
+      setAlertMessage("Please add at least 2 questions and no more than 10 questions.");
+      setAlertType("failure");
+      return;
+    }
+
+    dispatch(
+      addQuiz({
+        index: -1,
+        quiz: {
+          id: nanoid(), // Assign unique ID to the quiz
+          title: quizDetails.title,
+          description: quizDetails.description,
+          questions: questions.map(question => ({
+            id: question.id,
+            number: question.number,
+            question: question.question,
+            type: question.type,
+            options: question.options,
+            correctAnswer: question.correctAnswer,
+            answer: question.answer,
+          })),
+          createdDate: new Date().toISOString(),
+          active: true,
+        },
+      })
+    );
+
+    setQuizDetails({
+      title: "",
+      description: "",
+    });
+    setQuestions([]);
+    setCurrentQuestion({
+      question: "",
+      options: [],
+      correctAnswer: "",
+      answer: "",
+    });
+    setAlertMessage("Quiz submitted successfully.");
+    setAlertType("success");
   };
 
   return (
@@ -137,6 +163,10 @@ const CreateQuiz = () => {
 
         {selectedQuestionType && (
           <div className="flex flex-col items-center">
+            <h2 className="mb-4 text-2xl font-semibold">
+              {`${selectedQuestionType.replace("-", " ").toUpperCase()} - Question ${currentQuestionNumber}`}
+            </h2>
+
             <TextInput
               className="mb-4 border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-500 w-full max-w-4xl mx-auto"
               type="text"
@@ -198,36 +228,24 @@ const CreateQuiz = () => {
 
             {selectedQuestionType === "short-answer" && (
               <ShortAnswerForm
-                answer={currentQuestion.question}
-                setCurrentQuestion={(newQuestion) =>
-                  setCurrentQuestion((prev) => ({
-                    ...prev,
-                    question: newQuestion.question,
-                  }))
-                }
-              />
-            )}
-
-            {selectedQuestionType === "description" && (
-              <DescriptionForm
-                description={currentQuestion.question}
-                setCurrentQuestion={(newQuestion) =>
-                  setCurrentQuestion((prev) => ({
-                    ...prev,
-                    question: newQuestion.question,
-                  }))
-                }
+                question={currentQuestion.question}
+                answer={currentQuestion.answer}
+                setCurrentQuestion={setCurrentQuestion}
               />
             )}
 
             <div className="flex justify-between w-full mt-8 space-x-4">
-              <Button onClick={handleSaveQuestion} gradientMonochrome="purple">
+              <Button
+                onClick={handleSaveQuestion}
+                gradientMonochrome="purple"
+              >
                 Save & Next
               </Button>
               <Button
                 onClick={handleSubmitQuiz}
                 gradientMonochrome="purple"
                 disabled={questions.length === 0}
+                className={`${questions.length === 0 ? 'cursor-not-allowed' : ''}`}
               >
                 Submit Quiz
               </Button>
