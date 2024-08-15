@@ -1,61 +1,48 @@
-// src/pages/PlayQuiz.jsx
-import { useDispatch, useSelector } from "react-redux";
-import { Button, Radio } from "flowbite-react";
-import { setUserAnswer, resetQuizState } from "../store/quizSlice";
+import { useSelector } from "react-redux";
+import { Button, Card } from "flowbite-react";
+import { Link } from "react-router-dom";
 
 const PlayQuiz = () => {
-  const currentQuiz = useSelector((state) => state.quiz.currentQuiz);
-  const userAnswers = useSelector((state) => state.quiz.userAnswers);
-  const dispatch = useDispatch();
+  const quizzes = useSelector((state) => state.quiz.quizzes);
 
-  const handleAnswerSelect = (questionIndex, optionIndex) => {
-    dispatch(setUserAnswer({ questionIndex, answer: optionIndex }));
-  };
-
-  const handleSubmitQuiz = () => {
-    const correctAnswers = currentQuiz.questions.map(
-      (question, index) => userAnswers[index] === question.correctAnswer
-    );
-    const score = correctAnswers.filter(Boolean).length;
-    alert(`Your score is ${score} / ${currentQuiz.questions.length}`);
-    dispatch(resetQuizState());
-  };
+  // Filter active quizzes
+  const activeQuizzes = quizzes.filter((quiz) => quiz.active);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-red-100 flex flex-col">
-      <main className="flex-grow container mx-auto py-8">
-        <h2 className="text-2xl font-bold mb-6">Play Quiz</h2>
-        {currentQuiz ? (
-          <>
-            <h3 className="text-xl font-semibold mb-4">{currentQuiz.title}</h3>
-            <div>
-              {currentQuiz.questions.map((question, index) => (
-                <div key={index} className="mb-4">
-                  <span className="font-semibold">{question.question}</span>
-                  <div>
-                    {Array.isArray(question.options) && question.options.map((option, oIndex) => (
-                      <div key={oIndex} className="mb-2">
-                        <Radio
-                          id={`option-${index}-${oIndex}`}
-                          name={`quiz-${index}`}
-                          label={option}
-                          onChange={() => handleAnswerSelect(index, oIndex)}
-                          checked={userAnswers[index] === oIndex}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <Button color="green" onClick={handleSubmitQuiz}>
-              Submit Quiz
-            </Button>
-          </>
+    <div className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl">
+      <div className="w-full max-w-7xl">
+        <h2 className="text-2xl sm:text-3xl font-semibold mb-6 p-4 border-b border-gray-300 text-center">
+          Play Quizzes
+        </h2>
+        {activeQuizzes.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {activeQuizzes.map((quiz) => (
+              <Card key={quiz.id} className="shadow-lg">
+                <h3 className="text-xl font-semibold mb-2">{quiz.title}</h3>
+                <p className="mb-4">
+                  Type: {quiz.questions.length > 0
+                    ? quiz.questions[0].type === "mcq-single"
+                      ? "MCQ (Single Correct)"
+                      : "Short Answer"
+                    : "N/A"}
+                </p>
+                <Link to={`/quiz/${quiz.id}`}>
+                  <Button gradientMonochrome="purple" className="w-full">
+                    Start Quiz
+                  </Button>
+                </Link>
+              </Card>
+            ))}
+          </div>
         ) : (
-          <p>No quiz selected.</p>
+          <div className="text-center p-4">
+            <p className="text-lg mb-4">No active quizzes available.</p>
+            <Link to="/create-quiz">
+              <Button gradientMonochrome="purple">Create Your Quiz</Button>
+            </Link>
+          </div>
         )}
-      </main>
+      </div>
     </div>
   );
 };

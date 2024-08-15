@@ -3,12 +3,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button, Table } from "flowbite-react";
 import Switch from "react-switch";
 import { Link } from "react-router-dom";
+import { HiOutlineArrowRight } from "react-icons/hi";
 import { loadQuizzes, deleteQuiz, toggleQuizStatus } from "../store/quizSlice";
 import ConfirmDeleteModal from "../components/modal/ConfirmDeleteModal";
+import { useUser } from "@clerk/clerk-react";
+import NoQuizzesAvailable from "../components/cards/NoQuizzesAvailable";
 
 const MyQuizzes = () => {
   const dispatch = useDispatch();
   const quizzes = useSelector((state) => state.quiz.quizzes);
+  const { user } = useUser();
 
   const memoizedQuizzes = useMemo(() => quizzes || [], [quizzes]);
 
@@ -28,16 +32,28 @@ const MyQuizzes = () => {
   }, [quizToDelete, dispatch]);
 
   const handleStatusToggle = useCallback(
-    (index, currentStatus) => {
-      dispatch(toggleQuizStatus({ index, status: !currentStatus }));
+    (id, currentStatus) => {
+      dispatch(toggleQuizStatus({ id, status: !currentStatus }));
     },
     [dispatch]
   );
 
-  const openDeleteModal = useCallback((index) => {
-    setQuizToDelete(index);
+  const openDeleteModal = useCallback((id) => {
+    setQuizToDelete(id);
     setModalOpen(true);
   }, []);
+
+  const formatDate = (date) => {
+    const d = new Date(date);
+    return `${d.getDate().toString().padStart(2, "0")}-${(d.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${d.getFullYear().toString().slice(-2)} ${d
+      .getHours()
+      .toString()
+      .padStart(2, "0")}.${d.getMinutes().toString().padStart(2, "0")}${
+      d.getHours() >= 12 ? "pm" : "am"
+    }`;
+  };
 
   return (
     <div className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl">
@@ -45,30 +61,40 @@ const MyQuizzes = () => {
         <h2 className="text-2xl sm:text-3xl font-semibold mb-6 p-4 border-b border-gray-300 text-center">
           My Quizzes
         </h2>
+        <div className=" mr-10 mb-4 flex justify-end items-center">
+          <Link to="/create-quiz">
+            <Button
+              gradientMonochrome="purple"
+              className="font-bold transition-transform duration-300 transform hover:scale-105 hover:shadow-lg"
+            >
+              Create Quiz
+              <HiOutlineArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
+        </div>
         {memoizedQuizzes.length > 0 ? (
           <div className="overflow-x-auto">
             <Table hoverable={true} className="min-w-full">
-              <Table.Head>
-                <Table.HeadCell>Number</Table.HeadCell>
-                <Table.HeadCell>Type of Quiz</Table.HeadCell>
-                <Table.HeadCell>Title</Table.HeadCell>
-                <Table.HeadCell>Status</Table.HeadCell>
-                <Table.HeadCell>Date Created</Table.HeadCell>
-                <Table.HeadCell>Actions</Table.HeadCell>
+              <Table.Head >
+                <Table.HeadCell className="text-center font-extrabold">Number</Table.HeadCell>
+                <Table.HeadCell className="text-center font-extrabold">Title</Table.HeadCell>
+                <Table.HeadCell className="text-center font-extrabold">Status</Table.HeadCell>
+                <Table.HeadCell className="text-center font-extrabold">
+                  Date Created
+                </Table.HeadCell>
+                <Table.HeadCell className="text-center font-extrabold">Author</Table.HeadCell>
+                <Table.HeadCell className="text-center font-extrabold">Actions</Table.HeadCell>
               </Table.Head>
-              <Table.Body className="divide-y">
+              <Table.Body className="divide-y font-semibold">
                 {memoizedQuizzes.map((quiz, index) => (
-                  <Table.Row key={index} className="bg-white">
-                    <Table.Cell className="whitespace-nowrap">
+                  <Table.Row key={quiz.id} className="shadow-lg">
+                    <Table.Cell className="whitespace-nowrap text-center">
                       {index + 1}
                     </Table.Cell>
-                    <Table.Cell className="whitespace-nowrap">
-                      {quiz.type}
-                    </Table.Cell>
-                    <Table.Cell className="whitespace-nowrap">
+                    <Table.Cell className="whitespace-nowrap text-center">
                       {quiz.title}
                     </Table.Cell>
-                    <Table.Cell className="whitespace-nowrap flex items-center">
+                    <Table.Cell className="whitespace-nowrap text-center flex items-center justify-center">
                       <span
                         className={`mr-2 ${
                           quiz.active ? "text-purple-600" : "text-gray-500"
@@ -78,7 +104,9 @@ const MyQuizzes = () => {
                       </span>
                       <Switch
                         checked={quiz.active}
-                        onChange={() => handleStatusToggle(index, quiz.active)}
+                        onChange={() =>
+                          handleStatusToggle(quiz.id, quiz.active)
+                        }
                         onColor="#6b7280"
                         offColor="#d1d5db"
                         onHandleColor="#ffffff"
@@ -93,15 +121,18 @@ const MyQuizzes = () => {
                         aria-label={`Toggle status for ${quiz.title}`}
                       />
                     </Table.Cell>
-                    <Table.Cell className="whitespace-nowrap">
-                      {new Date(quiz.createdDate).toLocaleDateString()}
+                    <Table.Cell className="whitespace-nowrap text-center">
+                      {formatDate(quiz.createdDate)}
                     </Table.Cell>
-                    <Table.Cell className="whitespace-nowrap">
+                    <Table.Cell className="whitespace-nowrap text-center">
+                      {user ? user.firstName : "Unknown"}
+                    </Table.Cell>
+                    <Table.Cell className="whitespace-nowrap text-center">
                       <Button
                         color="red"
                         gradientMonochrome="purple"
-                        onClick={() => openDeleteModal(index)}
-                        className="w-full"
+                        onClick={() => openDeleteModal(quiz.id)}
+                        className="w-full hover:bg-red-700"
                       >
                         Delete
                       </Button>
@@ -112,12 +143,7 @@ const MyQuizzes = () => {
             </Table>
           </div>
         ) : (
-          <div className="text-center p-4">
-            <p className="text-lg mb-4">No quizzes available.</p>
-            <Link to="/create-quiz">
-              <Button gradientMonochrome="purple">Create Your Quiz</Button>
-            </Link>
-          </div>
+          <NoQuizzesAvailable />
         )}
       </div>
       <ConfirmDeleteModal

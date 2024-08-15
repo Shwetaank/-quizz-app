@@ -12,8 +12,11 @@ const quizSlice = createSlice({
   initialState,
   reducers: {
     addQuiz(state, action) {
-      // Assign unique ID to each quiz
-      const newQuiz = { ...action.payload.quiz, id: nanoid(), active: action.payload.quiz.active ?? true };
+      const newQuiz = {
+        ...action.payload.quiz,
+        id: nanoid(),
+        active: action.payload.quiz.active ?? true,
+      };
       state.quizzes.push(newQuiz);
       localStorage.setItem("quizzes", JSON.stringify(state.quizzes));
     },
@@ -26,7 +29,7 @@ const quizSlice = createSlice({
       state.quizzes = savedQuizzes;
     },
     setCurrentQuiz(state, action) {
-      state.currentQuiz = state.quizzes.find(quiz => quiz.id === action.payload);
+      state.currentQuiz = state.quizzes.find((quiz) => quiz.id === action.payload);
     },
     setUserAnswer(state, action) {
       const { questionIndex, answer } = action.payload;
@@ -38,7 +41,7 @@ const quizSlice = createSlice({
     },
     toggleQuizStatus(state, action) {
       const { id, status } = action.payload;
-      const quiz = state.quizzes.find(quiz => quiz.id === id);
+      const quiz = state.quizzes.find((quiz) => quiz.id === id);
       if (quiz) {
         quiz.active = status;
         localStorage.setItem("quizzes", JSON.stringify(state.quizzes));

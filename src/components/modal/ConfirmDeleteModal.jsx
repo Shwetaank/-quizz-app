@@ -22,15 +22,9 @@ const ConfirmDeleteModal = ({ isOpen, onClose, onConfirm }) => {
   }, [isOpen, onClose]);
 
   return (
-    <Modal
-      show={isOpen}
-      onClose={onClose}
-      className="bg-transparent backdrop-blur-sm"
-    >
+    <Modal show={isOpen} onClose={onClose} className="bg-transparent backdrop-blur-sm">
       <div ref={modalRef} className="bg-white rounded-lg shadow-lg">
-        <Modal.Header className="text-center text-lg font-semibold">
-          Confirm Deletion
-        </Modal.Header>
+        <Modal.Header className="text-center text-lg font-semibold">Confirm Deletion</Modal.Header>
         <Modal.Body className="py-6">
           <p>Are you sure you want to delete this quiz?</p>
         </Modal.Body>
@@ -40,7 +34,7 @@ const ConfirmDeleteModal = ({ isOpen, onClose, onConfirm }) => {
           </Button>
           <Button color="gray" outline onClick={onClose}>
             Cancel
-          </Button> 
+          </Button>
         </Modal.Footer>
       </div>
     </Modal>
