@@ -8,8 +8,9 @@ import { loadQuizzes, deleteQuiz, toggleQuizStatus } from "../store/quizSlice";
 import ConfirmDeleteModal from "../components/modal/ConfirmDeleteModal";
 import { useUser } from "@clerk/clerk-react";
 import NoQuizzesAvailable from "../components/cards/NoQuizzesAvailable";
-import { format } from 'date-fns';
-import { getQuizTypeLabel } from '../utils/getQuizTypeLabel';
+import { format } from "date-fns";
+import { getQuizTypeLabel } from "../utils/getQuizTypeLabel";
+import MyQuizzesTitleSwitcher from "../components/titleSwitcher/MyQuizzesTitleSwitcher";
 
 const MyQuizzes = () => {
   const dispatch = useDispatch();
@@ -57,15 +58,15 @@ const MyQuizzes = () => {
   }, []);
 
   const formatDate = (date) => {
-    return format(new Date(date), 'dd-MM-yy hh:mm a');
+    return format(new Date(date), "dd-MM-yy hh:mm a");
   };
 
   return (
     <div className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl">
       <div className="w-full max-w-7xl border border-gray-300 rounded-lg shadow-lg">
-        <h2 className="text-2xl sm:text-3xl font-semibold mb-6 p-4 border-b border-gray-300 text-center">
-          My Quizzes
-        </h2>
+        <div className="text-2xl sm:text-4xl font-semibold mb-8 text-center shadow-md">
+          <MyQuizzesTitleSwitcher />
+        </div>
         <div className="mr-10 mb-4 flex justify-end items-center">
           <Link to="/create-quiz">
             <Button
@@ -78,22 +79,40 @@ const MyQuizzes = () => {
           </Link>
         </div>
         <p className="mb-6 text-center text-lg text-gray-600">
-          Here you can find all the quizzes you've created. You can manage them by <strong>deleting</strong>, <strong>changing</strong> their status. 
-          Click <strong>"Create Quiz"</strong> to add a new quiz to your collection.
+          Here you can find all the quizzes you've created. You can manage them
+          by <strong>deleting</strong>, <strong>changing</strong> their status.
+          Click <strong>"Create Quiz"</strong> to add a new quiz to your
+          collection.
         </p>
         {loading ? (
-          <p className="text-center text-lg text-gray-600">Loading quizzes...</p>
+          <p className="text-center text-lg text-gray-600">
+            Loading quizzes...
+          </p>
         ) : memoizedQuizzes.length > 0 ? (
           <div className="overflow-x-auto">
             <Table hoverable={true} className="min-w-full">
               <Table.Head>
-                <Table.HeadCell className="text-center font-extrabold">Number</Table.HeadCell>
-                <Table.HeadCell className="text-center font-extrabold">Type</Table.HeadCell>
-                <Table.HeadCell className="text-center font-extrabold">Title</Table.HeadCell>
-                <Table.HeadCell className="text-center font-extrabold">Status</Table.HeadCell>
-                <Table.HeadCell className="text-center font-extrabold">Date Created</Table.HeadCell>
-                <Table.HeadCell className="text-center font-extrabold">Author</Table.HeadCell>
-                <Table.HeadCell className="text-center font-extrabold">Actions</Table.HeadCell>
+                <Table.HeadCell className="text-center font-extrabold">
+                  Number
+                </Table.HeadCell>
+                <Table.HeadCell className="text-center font-extrabold">
+                  Type
+                </Table.HeadCell>
+                <Table.HeadCell className="text-center font-extrabold">
+                  Title
+                </Table.HeadCell>
+                <Table.HeadCell className="text-center font-extrabold">
+                  Status
+                </Table.HeadCell>
+                <Table.HeadCell className="text-center font-extrabold">
+                  Date Created
+                </Table.HeadCell>
+                <Table.HeadCell className="text-center font-extrabold">
+                  Author
+                </Table.HeadCell>
+                <Table.HeadCell className="text-center font-extrabold">
+                  Actions
+                </Table.HeadCell>
               </Table.Head>
               <Table.Body className="divide-y font-semibold">
                 {memoizedQuizzes.map((quiz, index) => (
@@ -105,7 +124,9 @@ const MyQuizzes = () => {
                       {getQuizTypeLabel(quiz.type)}
                     </Table.Cell>
                     <Table.Cell className="whitespace-nowrap text-center">
-                      <span title={quiz.description || 'No description available'}>
+                      <span
+                        title={quiz.description || "No description available"}
+                      >
                         {quiz.title}
                       </span>
                     </Table.Cell>

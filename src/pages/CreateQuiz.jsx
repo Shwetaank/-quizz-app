@@ -12,6 +12,7 @@ import TitleSwitcher from "../components/titleSwitcher/TitleSwitcher";
 const CreateQuiz = () => {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [selectedQuestionType, setSelectedQuestionType] = useState("");
+  const [showCreateQuizButton, setShowCreateQuizButton] = useState(true); // State to control button visibility
   const [quizDetails, setQuizDetails] = useState({
     title: "",
     description: "",
@@ -44,6 +45,7 @@ const CreateQuiz = () => {
   const handleQuestionTypeChange = (type) => {
     setSelectedQuestionType(type);
     setIsModalOpen(false);
+    setShowCreateQuizButton(false); // Hide button once a question type is selected
   };
 
   const handleSaveQuestion = () => {
@@ -59,20 +61,26 @@ const CreateQuiz = () => {
       currentQuestion.question !== "" &&
       currentQuestion.answer !== "";
 
-    if (
-      currentQuestion.question &&
-      (isMCQValid || isShortAnswerValid)
-    ) {
+    if (currentQuestion.question && (isMCQValid || isShortAnswerValid)) {
       setQuestions([
         ...questions,
         {
-          id: nanoid(), // Assign unique ID to each question
+          id: nanoid(),
           number: currentQuestionNumber,
           question: currentQuestion.question,
           type: selectedQuestionType,
-          options: selectedQuestionType === "mcq-single" ? currentQuestion.options : [],
-          correctAnswer: selectedQuestionType === "mcq-single" ? currentQuestion.correctAnswer : "",
-          answer: selectedQuestionType === "short-answer" ? currentQuestion.answer : "",
+          options:
+            selectedQuestionType === "mcq-single"
+              ? currentQuestion.options
+              : [],
+          correctAnswer:
+            selectedQuestionType === "mcq-single"
+              ? currentQuestion.correctAnswer
+              : "",
+          answer:
+            selectedQuestionType === "short-answer"
+              ? currentQuestion.answer
+              : "",
           createdDate: new Date().toISOString(),
         },
       ]);
@@ -98,7 +106,9 @@ const CreateQuiz = () => {
     }
 
     if (questions.length < 2 || questions.length > 10) {
-      setAlertMessage("Please add at least 2 questions and no more than 10 questions.");
+      setAlertMessage(
+        "Please add at least 2 questions and no more than 10 questions."
+      );
       setAlertType("failure");
       return;
     }
@@ -107,11 +117,14 @@ const CreateQuiz = () => {
       addQuiz({
         index: -1,
         quiz: {
-          id: nanoid(), // Assign unique ID to the quiz
+          id: nanoid(),
           title: quizDetails.title,
           description: quizDetails.description,
-          type: selectedQuestionType === "mcq-single" ? "MCQ-Single" : "Short Answer", // Add type of quiz here
-          questions: questions.map(question => ({
+          type:
+            selectedQuestionType === "mcq-single"
+              ? "MCQ-Single"
+              : "Short Answer",
+          questions: questions.map((question) => ({
             id: question.id,
             number: question.number,
             question: question.question,
@@ -163,10 +176,23 @@ const CreateQuiz = () => {
           selectedType={selectedQuestionType}
         />
 
+        {showCreateQuizButton && (
+          <div className="w-full flex justify-end mt-4">
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              gradientMonochrome="purple"
+            >
+              Create Your Quiz
+            </Button>
+          </div>
+        )}
+
         {selectedQuestionType && (
           <div className="flex flex-col items-center">
             <h2 className="mb-4 text-2xl font-semibold">
-              {`${selectedQuestionType.replace("-", " ").toUpperCase()} - Question ${currentQuestionNumber}`}
+              {`${selectedQuestionType
+                .replace("-", " ")
+                .toUpperCase()} - Question ${currentQuestionNumber}`}
             </h2>
 
             <TextInput
@@ -237,17 +263,16 @@ const CreateQuiz = () => {
             )}
 
             <div className="flex justify-between w-full mt-8 space-x-4">
-              <Button
-                onClick={handleSaveQuestion}
-                gradientMonochrome="purple"
-              >
+              <Button onClick={handleSaveQuestion} gradientMonochrome="purple">
                 Save & Next
               </Button>
               <Button
                 onClick={handleSubmitQuiz}
                 gradientMonochrome="purple"
                 disabled={questions.length === 0}
-                className={`${questions.length === 0 ? 'cursor-not-allowed' : ''}`}
+                className={`${
+                  questions.length === 0 ? "cursor-not-allowed" : ""
+                }`}
               >
                 Submit Quiz
               </Button>

@@ -9,6 +9,7 @@ import {
   SiMariadb,
 } from "react-icons/si";
 import profilePic from "../assets/profile-pic.jpg";
+import AboutTitleSwitcher from "../components/titleSwitcher/AboutTitleSwitcher";
 
 const skills = [
   { icon: FaJs, label: "JavaScript" },
@@ -35,9 +36,9 @@ const projects = [
 const AboutMe = () => (
   <div className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl">
     <div className="w-full max-w-7xl border border-gray-300 rounded-lg shadow-md">
-      <h2 className="text-2xl sm:text-4xl font-semibold mb-6 p-4 border-b border-gray-300 text-center">
-        About Me
-      </h2>
+      <div className="text-2xl sm:text-4xl font-semibold mb-8 text-center shadow-md">
+        <AboutTitleSwitcher />
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 p-4">
         {/* Profile Section */}
         <div className="flex flex-col items-center sm:items-start text-center sm:text-left px-4 border-r border-gray-300">
