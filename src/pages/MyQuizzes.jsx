@@ -8,6 +8,8 @@ import { loadQuizzes, deleteQuiz, toggleQuizStatus } from "../store/quizSlice";
 import ConfirmDeleteModal from "../components/modal/ConfirmDeleteModal";
 import { useUser } from "@clerk/clerk-react";
 import NoQuizzesAvailable from "../components/cards/NoQuizzesAvailable";
+import { format } from 'date-fns';
+import { getQuizTypeLabel } from '../utils/getQuizTypeLabel';
 
 const MyQuizzes = () => {
   const dispatch = useDispatch();
@@ -18,9 +20,20 @@ const MyQuizzes = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [quizToDelete, setQuizToDelete] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(loadQuizzes());
+    const fetchQuizzes = async () => {
+      try {
+        await dispatch(loadQuizzes());
+      } catch (error) {
+        console.error("Failed to load quizzes:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuizzes();
   }, [dispatch]);
 
   const handleDelete = useCallback(() => {
@@ -44,15 +57,7 @@ const MyQuizzes = () => {
   }, []);
 
   const formatDate = (date) => {
-    const d = new Date(date);
-    return `${d.getDate().toString().padStart(2, "0")}-${(d.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}-${d.getFullYear().toString().slice(-2)} ${d
-      .getHours()
-      .toString()
-      .padStart(2, "0")}.${d.getMinutes().toString().padStart(2, "0")}${
-      d.getHours() >= 12 ? "pm" : "am"
-    }`;
+    return format(new Date(date), 'dd-MM-yy hh:mm a');
   };
 
   return (
@@ -61,7 +66,7 @@ const MyQuizzes = () => {
         <h2 className="text-2xl sm:text-3xl font-semibold mb-6 p-4 border-b border-gray-300 text-center">
           My Quizzes
         </h2>
-        <div className=" mr-10 mb-4 flex justify-end items-center">
+        <div className="mr-10 mb-4 flex justify-end items-center">
           <Link to="/create-quiz">
             <Button
               gradientMonochrome="purple"
@@ -72,16 +77,21 @@ const MyQuizzes = () => {
             </Button>
           </Link>
         </div>
-        {memoizedQuizzes.length > 0 ? (
+        <p className="mb-6 text-center text-lg text-gray-600">
+          Here you can find all the quizzes you've created. You can manage them by <strong>deleting</strong>, <strong>changing</strong> their status. 
+          Click <strong>"Create Quiz"</strong> to add a new quiz to your collection.
+        </p>
+        {loading ? (
+          <p className="text-center text-lg text-gray-600">Loading quizzes...</p>
+        ) : memoizedQuizzes.length > 0 ? (
           <div className="overflow-x-auto">
             <Table hoverable={true} className="min-w-full">
-              <Table.Head >
+              <Table.Head>
                 <Table.HeadCell className="text-center font-extrabold">Number</Table.HeadCell>
+                <Table.HeadCell className="text-center font-extrabold">Type</Table.HeadCell>
                 <Table.HeadCell className="text-center font-extrabold">Title</Table.HeadCell>
                 <Table.HeadCell className="text-center font-extrabold">Status</Table.HeadCell>
-                <Table.HeadCell className="text-center font-extrabold">
-                  Date Created
-                </Table.HeadCell>
+                <Table.HeadCell className="text-center font-extrabold">Date Created</Table.HeadCell>
                 <Table.HeadCell className="text-center font-extrabold">Author</Table.HeadCell>
                 <Table.HeadCell className="text-center font-extrabold">Actions</Table.HeadCell>
               </Table.Head>
@@ -92,7 +102,12 @@ const MyQuizzes = () => {
                       {index + 1}
                     </Table.Cell>
                     <Table.Cell className="whitespace-nowrap text-center">
-                      {quiz.title}
+                      {getQuizTypeLabel(quiz.type)}
+                    </Table.Cell>
+                    <Table.Cell className="whitespace-nowrap text-center">
+                      <span title={quiz.description || 'No description available'}>
+                        {quiz.title}
+                      </span>
                     </Table.Cell>
                     <Table.Cell className="whitespace-nowrap text-center flex items-center justify-center">
                       <span

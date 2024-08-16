@@ -110,6 +110,7 @@ const CreateQuiz = () => {
           id: nanoid(), // Assign unique ID to the quiz
           title: quizDetails.title,
           description: quizDetails.description,
+          type: selectedQuestionType === "mcq-single" ? "MCQ-Single" : "Short Answer", // Add type of quiz here
           questions: questions.map(question => ({
             id: question.id,
             number: question.number,
@@ -125,6 +126,7 @@ const CreateQuiz = () => {
       })
     );
 
+    // Resetting form state after quiz submission
     setQuizDetails({
       title: "",
       description: "",
@@ -185,15 +187,15 @@ const CreateQuiz = () => {
             <Textarea
               className="mb-4 border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-500 w-full max-w-4xl mx-auto"
               name="description"
-              placeholder="Describe the quiz (max 20 characters)"
+              placeholder="Describe the quiz (max 200 characters)"
               value={quizDetails.description}
               onChange={(e) =>
                 setQuizDetails({
                   ...quizDetails,
-                  description: e.target.value.slice(0, 20),
+                  description: e.target.value.slice(0, 200),
                 })
               }
-              maxLength={20}
+              maxLength={200}
               rows={2}
             />
 

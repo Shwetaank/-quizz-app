@@ -15,6 +15,7 @@ const quizSlice = createSlice({
       const newQuiz = {
         ...action.payload.quiz,
         id: nanoid(),
+        type: action.payload.quiz.type, // Include type of quiz
         active: action.payload.quiz.active ?? true,
       };
       state.quizzes.push(newQuiz);
@@ -25,15 +26,17 @@ const quizSlice = createSlice({
       localStorage.setItem("quizzes", JSON.stringify(state.quizzes));
     },
     loadQuizzes(state) {
-      const savedQuizzes = JSON.parse(localStorage.getItem("quizzes")) || [];
-      state.quizzes = savedQuizzes;
+      const quizzes = JSON.parse(localStorage.getItem("quizzes")) || [];
+      state.quizzes = quizzes;
     },
     setCurrentQuiz(state, action) {
-      state.currentQuiz = state.quizzes.find((quiz) => quiz.id === action.payload);
+      state.currentQuiz = action.payload;
     },
     setUserAnswer(state, action) {
-      const { questionIndex, answer } = action.payload;
-      state.userAnswers[questionIndex] = answer;
+      state.userAnswers = {
+        ...state.userAnswers,
+        [action.payload.questionId]: action.payload.answer,
+      };
     },
     resetQuizState(state) {
       state.currentQuiz = null;
@@ -43,7 +46,7 @@ const quizSlice = createSlice({
       const { id, status } = action.payload;
       const quiz = state.quizzes.find((quiz) => quiz.id === id);
       if (quiz) {
-        quiz.active = status;
+        quiz.active = status; // Directly set the status passed in payload
         localStorage.setItem("quizzes", JSON.stringify(state.quizzes));
       }
     },
