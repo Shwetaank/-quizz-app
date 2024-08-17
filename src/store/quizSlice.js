@@ -15,7 +15,7 @@ const quizSlice = createSlice({
       const newQuiz = {
         ...action.payload.quiz,
         id: nanoid(),
-        type: action.payload.quiz.type, // Include type of quiz
+        type: action.payload.quiz.type,
         active: action.payload.quiz.active ?? true,
       };
       state.quizzes.push(newQuiz);
@@ -46,7 +46,7 @@ const quizSlice = createSlice({
       const { id, status } = action.payload;
       const quiz = state.quizzes.find((quiz) => quiz.id === id);
       if (quiz) {
-        quiz.active = status; // Directly set the status passed in payload
+        quiz.active = status;
         localStorage.setItem("quizzes", JSON.stringify(state.quizzes));
       }
     },

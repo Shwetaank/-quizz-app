@@ -12,7 +12,7 @@ import TitleSwitcher from "../components/titleSwitcher/TitleSwitcher";
 const CreateQuiz = () => {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [selectedQuestionType, setSelectedQuestionType] = useState("");
-  const [showCreateQuizButton, setShowCreateQuizButton] = useState(true); // State to control button visibility
+  const [showCreateQuizButton, setShowCreateQuizButton] = useState(true); 
   const [quizDetails, setQuizDetails] = useState({
     title: "",
     description: "",
@@ -53,7 +53,7 @@ const CreateQuiz = () => {
       selectedQuestionType === "mcq-single"
         ? currentQuestion.options.length >= 2 &&
           currentQuestion.correctAnswer !== "" &&
-          currentQuestion.options[currentQuestion.correctAnswer] !== undefined
+          currentQuestion.options.includes(currentQuestion.correctAnswer)
         : true;
 
     const isShortAnswerValid =

@@ -37,7 +37,7 @@ const MCQForm = ({
   const handleCorrectAnswerChange = (e) => {
     setCurrentQuestion((prev) => ({
       ...prev,
-      correctAnswer: e.target.value,
+      correctAnswer: e.target.value, // Store the actual value
     }));
   };
 
@@ -101,9 +101,9 @@ const MCQForm = ({
         className="mt-4 w-full"
       >
         <option value="">Select Correct Answer</option>
-        {options.map((_, index) => (
-          <option key={index} value={index}>
-            Option {index + 1}
+        {options.map((option, index) => (
+          <option key={index} value={option}>
+            {option}
           </option>
         ))}
       </Select>
@@ -122,6 +122,7 @@ MCQForm.propTypes = {
     question: PropTypes.string.isRequired,
     options: PropTypes.arrayOf(PropTypes.string).isRequired,
     correctAnswer: PropTypes.string.isRequired,
+    answer: PropTypes.string.isRequired,
   }).isRequired,
 };
 

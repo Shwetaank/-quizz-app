@@ -3,9 +3,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button, Table } from "flowbite-react";
 import Switch from "react-switch";
 import { Link } from "react-router-dom";
-import { HiOutlineArrowRight } from "react-icons/hi";
-import { loadQuizzes, deleteQuiz, toggleQuizStatus } from "../store/quizSlice";
+import {
+  HiOutlineArrowRight,
+  HiOutlineEye,
+  HiOutlineTrash,
+} from "react-icons/hi";
+import {
+  loadQuizzes,
+  deleteQuiz,
+  toggleQuizStatus,
+  setCurrentQuiz,
+} from "../store/quizSlice";
 import ConfirmDeleteModal from "../components/modal/ConfirmDeleteModal";
+import QuizDetailModal from "../components/modal/QuizDetailModal";
 import { useUser } from "@clerk/clerk-react";
 import NoQuizzesAvailable from "../components/cards/NoQuizzesAvailable";
 import { format } from "date-fns";
@@ -21,6 +31,8 @@ const MyQuizzes = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [quizToDelete, setQuizToDelete] = useState(null);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -57,6 +69,20 @@ const MyQuizzes = () => {
     setModalOpen(true);
   }, []);
 
+  const openViewModal = useCallback(
+    (quiz) => {
+      dispatch(setCurrentQuiz(quiz));
+      setSelectedQuiz(quiz);
+      setViewModalOpen(true);
+    },
+    [dispatch]
+  );
+
+  const closeViewModal = useCallback(() => {
+    setViewModalOpen(false);
+    setSelectedQuiz(null);
+  }, []);
+
   const formatDate = (date) => {
     return format(new Date(date), "dd-MM-yy hh:mm a");
   };
@@ -68,21 +94,23 @@ const MyQuizzes = () => {
           <MyQuizzesTitleSwitcher />
         </div>
         <div className="mr-10 mb-4 flex justify-end items-center">
-          <Link to="/create-quiz">
-            <Button
-              gradientMonochrome="purple"
-              className="font-bold transition-transform duration-300 transform hover:scale-105 hover:shadow-lg"
-            >
-              Create Quiz
-              <HiOutlineArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
+          {memoizedQuizzes.length > 0 && (
+            <Link to="/create-quiz">
+              <Button
+                gradientMonochrome="purple"
+                className="font-bold transition-transform duration-300 transform hover:scale-105 hover:shadow-lg"
+              >
+                Create Quiz
+                <HiOutlineArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          )}
         </div>
         <p className="mb-6 text-center text-lg text-gray-600">
-          Here you can find all the quizzes you've created. You can manage them
-          by <strong>deleting</strong>, <strong>changing</strong> their status.
-          Click <strong>"Create Quiz"</strong> to add a new quiz to your
-          collection.
+          Here you can find all the quizzes you&apos;ve created. You can manage
+          them by <strong>deleting</strong>, <strong>changing</strong> their
+          status. Click <strong>&quot;Create Quiz&quot;</strong> to add a new
+          quiz to your collection.
         </p>
         {loading ? (
           <p className="text-center text-lg text-gray-600">
@@ -163,14 +191,22 @@ const MyQuizzes = () => {
                     <Table.Cell className="whitespace-nowrap text-center">
                       {user ? user.firstName : "Unknown"}
                     </Table.Cell>
-                    <Table.Cell className="whitespace-nowrap text-center">
+                    <Table.Cell className="whitespace-nowrap text-center flex items-center justify-center">
+                      <Button
+                        color="blue"
+                        gradientMonochrome="purple"
+                        onClick={() => openViewModal(quiz)}
+                        className="mr-2 w-full hover:bg-blue-700"
+                      >
+                        <HiOutlineEye className="h-5 w-5" />
+                      </Button>
                       <Button
                         color="red"
                         gradientMonochrome="purple"
                         onClick={() => openDeleteModal(quiz.id)}
                         className="w-full hover:bg-red-700"
                       >
-                        Delete
+                        <HiOutlineTrash className="h-5 w-5" />
                       </Button>
                     </Table.Cell>
                   </Table.Row>
@@ -187,6 +223,11 @@ const MyQuizzes = () => {
         onClose={() => setModalOpen(false)}
         onConfirm={handleDelete}
         gradientMonochrome="purple"
+      />
+      <QuizDetailModal
+        isOpen={viewModalOpen}
+        onClose={closeViewModal}
+        quiz={selectedQuiz}
       />
     </div>
   );
