@@ -1,34 +1,32 @@
 import { useSelector } from "react-redux";
 import { Button, Card } from "flowbite-react";
 import { Link } from "react-router-dom";
-
-import img1 from "../assets/mcq.jpg";
-import img2 from "../assets/shortAnswer.jpg";
 import { HiOutlineArrowRight } from "react-icons/hi";
 import { useUser } from "@clerk/clerk-react";
 import { format } from "date-fns";
-
 import NoQuizzesAvailable from "./../components/cards/NoQuizzesAvailable";
 import PlayTitleSwitcher from "../components/titleSwitcher/PlayTitleSwitcher";
+import img1 from "../assets/mcq.jpg";
+import img2 from "../assets/shortAnswer.jpg";
 
 const PlayQuiz = () => {
-  const { quizzes } = useSelector((state) => state.quiz);
-  const { user } = useUser(); // Get user info
+  const quizzes = useSelector((state) => state.quiz.quizzes);
+  const { user } = useUser();
   const activeQuizzes = quizzes.filter((quiz) => quiz.active);
 
   const formatDate = (date) => {
     try {
       return format(new Date(date), "dd-MM-yy hh:mm a");
     } catch (error) {
+      console.error("Date formatting error:", error);
       return "Invalid Date";
     }
   };
 
   return (
     <div className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl">
-      <div className="w-full max-w-7xl ">
+      <div className="w-full max-w-7xl">
         <div className="text-2xl sm:text-4xl font-semibold mb-8 text-center shadow-md">
-          {/* Replace static title with TitleSwitcher */}
           <PlayTitleSwitcher />
         </div>
 
@@ -56,23 +54,23 @@ const PlayQuiz = () => {
                   className="w-full h-40 object-cover rounded-t-lg"
                 />
                 <div className="p-4">
-                  <h3 className="text-xl font-bold mb-2 cursor-pointer hover:underline">
+                  <h3 className="text-xl font-bold mb-1 flex justify-center cursor-pointer">
                     {quiz.title || "Untitled Quiz"}
                   </h3>
-                  <p className="mb-2 font-thin">
+                  <p className="mb-2 font-thin text-sm flex justify-end">
                     <strong>By</strong>: {user?.firstName || "Unknown Author"}
                   </p>
-                  <p className="italic font-semibold">
+                  <p className="font-semibold text-sm">
                     {quiz.questions.length > 0
                       ? quiz.questions[0].type === "mcq-single"
                         ? "MCQ (Single Correct)"
                         : "Short Answer"
                       : "N/A"}
                   </p>
-                  <p className="mb-2 text-justify text-gray-600 font-thin">
+                  <p className="mb-2 text-justify text-sm text-gray-600 font-thin">
                     {quiz.description || "No description available"}
                   </p>
-                  <p className="mb-4 text-gray-600 font-thin">
+                  <p className="mb-4 text-gray-600 font-thin text-sm flex justify-end">
                     {formatDate(quiz.createdDate) || "Date not available"}
                   </p>
                   <div className="flex justify-end">

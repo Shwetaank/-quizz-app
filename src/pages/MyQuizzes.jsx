@@ -21,6 +21,7 @@ import NoQuizzesAvailable from "../components/cards/NoQuizzesAvailable";
 import { format } from "date-fns";
 import { getQuizTypeLabel } from "../utils/getQuizTypeLabel";
 import MyQuizzesTitleSwitcher from "../components/titleSwitcher/MyQuizzesTitleSwitcher";
+import Spinner from "../components/Spinner"; // Import Spinner component
 
 const MyQuizzes = () => {
   const dispatch = useDispatch();
@@ -113,9 +114,7 @@ const MyQuizzes = () => {
           quiz to your collection.
         </p>
         {loading ? (
-          <p className="text-center text-lg text-gray-600">
-            Loading quizzes...
-          </p>
+          <Spinner />
         ) : memoizedQuizzes.length > 0 ? (
           <div className="overflow-x-auto">
             <Table hoverable={true} className="min-w-full">

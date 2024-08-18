@@ -2,6 +2,8 @@ import PropTypes from "prop-types";
 import { Button, TextInput, Select, Alert } from "flowbite-react";
 import { useState } from "react";
 
+import { HiOutlineTrash } from "react-icons/hi";
+
 const MCQForm = ({
   options,
   correctAnswer,
@@ -78,7 +80,7 @@ const MCQForm = ({
               onClick={() => deleteOption(index)}
               className="ml-2"
             >
-              Delete
+              <HiOutlineTrash />
             </Button>
           </div>
         ))}
