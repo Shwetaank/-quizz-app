@@ -12,6 +12,8 @@ import AboutMe from "./pages/AboutMe";
 import PlayQuiz from "./pages/PlayQuiz";
 import MyQuizzes from "./pages/MyQuizzes";
 import CreateQuiz from "./pages/CreateQuiz.jsx";
+import QuizPage from "./pages/QuizPage.jsx";
+import ResultPage from "./pages/ResultPage.jsx";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -34,6 +36,14 @@ const router = createBrowserRouter([
       {
         path: "/create-quiz",
         element: <CreateQuiz />,
+      },
+      {
+        path: "/quiz/:quizId",
+        element: <QuizPage />,
+      },
+      {
+        path: "/results/:quizId",
+        element: <ResultPage />,
       },
     ],
   },

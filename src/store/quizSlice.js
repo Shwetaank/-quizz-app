@@ -4,7 +4,8 @@ import { nanoid } from "nanoid";
 const initialState = {
   quizzes: [],
   currentQuiz: null,
-  userAnswers: {},
+  userAnswers: {}, 
+  results: {},     
 };
 
 const quizSlice = createSlice({
@@ -33,14 +34,25 @@ const quizSlice = createSlice({
       state.currentQuiz = action.payload;
     },
     setUserAnswer(state, action) {
-      state.userAnswers = {
-        ...state.userAnswers,
-        [action.payload.questionId]: action.payload.answer,
-      };
+      const { quizId, questionId, answer } = action.payload;
+      if (!state.userAnswers[quizId]) {
+        state.userAnswers[quizId] = {};
+      }
+      state.userAnswers[quizId][questionId] = answer;
     },
-    resetQuizState(state) {
-      state.currentQuiz = null;
-      state.userAnswers = {};
+    resetQuizState(state, action) {
+      const { quizId } = action.payload;
+      if (quizId) {
+        state.userAnswers[quizId] = {};
+      } else {
+        state.currentQuiz = null;
+        state.userAnswers = {};
+        state.results = {};
+      }
+    },
+    setResult(state, action) {
+      const { quizId, score } = action.payload;
+      state.results[quizId] = score;
     },
     toggleQuizStatus(state, action) {
       const { id, status } = action.payload;
@@ -60,6 +72,7 @@ export const {
   setCurrentQuiz,
   setUserAnswer,
   resetQuizState,
+  setResult,
   toggleQuizStatus,
 } = quizSlice.actions;
 
