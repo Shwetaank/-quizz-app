@@ -2,7 +2,7 @@ import { useUser } from "@clerk/clerk-react";
 import { Navigate, Outlet } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import Spinner from "./components/Spinner";
+import Spinner from "./components/spinner/Spinner";
 
 const App = () => {
   const { isLoaded, isSignedIn } = useUser();

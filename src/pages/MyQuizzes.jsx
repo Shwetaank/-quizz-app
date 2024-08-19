@@ -21,7 +21,7 @@ import NoQuizzesAvailable from "../components/cards/NoQuizzesAvailable";
 import { format } from "date-fns";
 import { getQuizTypeLabel } from "../utils/getQuizTypeLabel";
 import MyQuizzesTitleSwitcher from "../components/titleSwitcher/MyQuizzesTitleSwitcher";
-import Spinner from "../components/Spinner"; // Import Spinner component
+import Spinner from "../components/spinner/Spinner"; 
 
 const MyQuizzes = () => {
   const dispatch = useDispatch();

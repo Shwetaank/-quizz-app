@@ -33,7 +33,7 @@ const PlayQuizDetailModal = ({ quiz, onClose }) => {
   const quizType = getQuizTypeLabel(quiz.type);
 
   return (
-    <Modal show={true} onClose={onClose}>
+    <Modal show={true} onClose={onClose} dismissible={true}>
       <Modal.Header>{quiz.title}</Modal.Header>
       <Modal.Body>
         <div>

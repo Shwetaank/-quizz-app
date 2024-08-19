@@ -1,9 +1,10 @@
 import { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Card, Spinner } from "flowbite-react";
+import { Button, Card } from "flowbite-react";
 import { setUserAnswer, setResult, resetQuizState } from "../store/quizSlice";
 import { getQuizTypeLabel } from "../utils/getQuizTypeLabel";
+import ResultLoadingSpinner from "../components/spinner/ResultLoadingSpinner";
 
 const QuizPage = () => {
   const { quizId } = useParams();
@@ -96,10 +97,7 @@ const QuizPage = () => {
           {getQuizTypeLabel(quiz.type)}
         </p>
         {loading ? (
-          <div className="flex justify-center items-center mb-4">
-            <Spinner aria-label="Loading results..." />
-            <p className="ml-4">Getting Results...</p>
-          </div>
+          <ResultLoadingSpinner />
         ) : (
           <div>
             {questions.length > 0 ? (
@@ -140,16 +138,28 @@ const QuizPage = () => {
                 </div>
                 <div className="flex justify-between">
                   {currentQuestionIndex > 0 && (
-                    <Button onClick={handlePrevious} gradientMonochrome="gray">
+                    <Button
+                      onClick={handlePrevious}
+                      gradientMonochrome="gray"
+                      disabled={loading}
+                    >
                       Previous
                     </Button>
                   )}
                   {currentQuestionIndex < questions.length - 1 ? (
-                    <Button onClick={handleNext} gradientMonochrome="purple">
+                    <Button
+                      onClick={handleNext}
+                      gradientMonochrome="purple"
+                      disabled={loading}
+                    >
                       Next
                     </Button>
                   ) : (
-                    <Button onClick={handleSubmit} gradientMonochrome="green">
+                    <Button
+                      onClick={handleSubmit}
+                      gradientMonochrome="green"
+                      disabled={loading}
+                    >
                       Submit
                     </Button>
                   )}
