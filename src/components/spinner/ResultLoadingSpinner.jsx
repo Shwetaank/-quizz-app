@@ -3,7 +3,7 @@ import { Spinner as FlowbiteSpinner } from "flowbite-react";
 const ResultLoadingSpinner = () => (
   <div
     role="status"
-    className="flex flex-col items-center justify-center w-full py-8 bg-gradient-to-b from-purple-100 to-pink-100 rounded-lg p-4 sm:p-6 md:p-8"
+    className="flex flex-col items-center justify-center w-full py-8 bg-transparent rounded-lg p-4 sm:p-6 md:p-8"
   >
     <FlowbiteSpinner
       aria-hidden="true"

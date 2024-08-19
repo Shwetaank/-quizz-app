@@ -31,7 +31,7 @@ const QuizPage = () => {
   const { quizId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user } = useUser(); // Use the useUser hook to get user information
+  const { user } = useUser();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -70,11 +70,9 @@ const QuizPage = () => {
           return 0;
         }
 
-        // Show alert when the minute changes
+      
         if (lastMinute !== null && newMinutes < lastMinute) {
-          setAlertMessage(`${newMinutes} minute(s) remaining!`);
-          setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 4000);
+          showAlertMessage(`${newMinutes} minute(s) remaining!`);
         }
         setLastMinute(newMinutes);
 
@@ -87,6 +85,12 @@ const QuizPage = () => {
       dispatch(resetQuizState({ quizId }));
     };
   }, [dispatch, quizId, questions.length, quiz, lastMinute]);
+
+  const showAlertMessage = (message) => {
+    setAlertMessage(message);
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 4000);
+  };
 
   const handleAnswerChange = (value) => {
     dispatch(
@@ -104,9 +108,7 @@ const QuizPage = () => {
         setCurrentQuestionIndex((prev) => prev + 1);
       }
     } else {
-      setAlertMessage("Please select an option or enter an answer.");
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 6000);
+      showAlertMessage("Please select an option or enter an answer.");
     }
   };
 
@@ -125,9 +127,7 @@ const QuizPage = () => {
         navigate(`/results/${quizId}`);
       }, 2000);
     } else {
-      setAlertMessage("Please answer all questions before submitting.");
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 6000); // Hide alert after 6 seconds
+      showAlertMessage("Please answer all questions before submitting.");
     }
   };
 
@@ -178,8 +178,7 @@ const QuizPage = () => {
             {getQuizTypeLabel(quiz.type)}
           </p>
           <p className="text-lg font-semibold text-gray-600 text-left mb-2 mt-2">
-            Welcome, <strong> {user?.firstName || "User"}</strong>{" "}
-            {/* Display username */}
+            Welcome, <strong> {user?.firstName || "User"}</strong>
           </p>
         </div>
         <div className="flex justify-between items-center mb-4 border-b border-gray-300 pb-4 shadow-md">
