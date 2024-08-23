@@ -3,12 +3,15 @@ import { Modal, Button } from "flowbite-react";
 import { getQuizTypeLabel } from "../../utils/getQuizTypeLabel";
 
 const QuizDetailModal = ({ isOpen, onClose, quiz }) => {
+  // Render nothing if modal is not open or quiz data is missing
   if (!isOpen || !quiz) return null;
 
+  // Close modal handler
   const handleClose = () => {
     onClose();
   };
 
+  // Render details for a single question
   const renderQuestionDetails = (question, index) => (
     <div key={index} className="mb-4">
       <h3 className="text-lg font-semibold">Question {index + 1}</h3>
@@ -45,11 +48,13 @@ const QuizDetailModal = ({ isOpen, onClose, quiz }) => {
         {quiz.title} ({getQuizTypeLabel(quiz.type)})
       </Modal.Header>
       <Modal.Body>
+        {/* Render details for each question in the quiz */}
         {quiz.questions.map((question, index) =>
           renderQuestionDetails(question, index)
         )}
       </Modal.Body>
       <Modal.Footer>
+        {/* Button to close the modal */}
         <Button
           onClick={handleClose}
           className="ml-auto"
@@ -62,6 +67,7 @@ const QuizDetailModal = ({ isOpen, onClose, quiz }) => {
   );
 };
 
+// Define prop types for the component
 QuizDetailModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,

@@ -21,15 +21,29 @@ import NoQuizzesAvailable from "../components/cards/NoQuizzesAvailable";
 import { format } from "date-fns";
 import { getQuizTypeLabel } from "../utils/getQuizTypeLabel";
 import MyQuizzesTitleSwitcher from "../components/titleSwitcher/MyQuizzesTitleSwitcher";
-import Spinner from "../components/spinner/Spinner"; 
+import Spinner from "../components/spinner/Spinner";
+import { motion } from "framer-motion";
+
+// Variants for animations
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.5 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
 
 const MyQuizzes = () => {
   const dispatch = useDispatch();
   const quizzes = useSelector((state) => state.quiz.quizzes);
   const { user } = useUser();
 
+  // Memoize quizzes to prevent unnecessary re-renders
   const memoizedQuizzes = useMemo(() => quizzes || [], [quizzes]);
 
+  // State management for modals and loading
   const [modalOpen, setModalOpen] = useState(false);
   const [quizToDelete, setQuizToDelete] = useState(null);
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -37,6 +51,7 @@ const MyQuizzes = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Fetch quizzes on component mount
     const fetchQuizzes = async () => {
       try {
         await dispatch(loadQuizzes());
@@ -50,6 +65,7 @@ const MyQuizzes = () => {
     fetchQuizzes();
   }, [dispatch]);
 
+  // Handlers for delete and status toggle actions
   const handleDelete = useCallback(() => {
     if (quizToDelete !== null) {
       dispatch(deleteQuiz(quizToDelete));
@@ -84,13 +100,22 @@ const MyQuizzes = () => {
     setSelectedQuiz(null);
   }, []);
 
+  // Helper function to format date
   const formatDate = (date) => {
     return format(new Date(date), "dd-MM-yy hh:mm a");
   };
 
   return (
-    <div className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl">
-      <div className="w-full max-w-7xl border border-gray-300 rounded-lg shadow-lg">
+    <motion.div
+      className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.div
+        className="w-full max-w-7xl border border-gray-300 rounded-lg shadow-lg"
+        variants={itemVariants}
+      >
         <div className="text-2xl sm:text-4xl font-semibold mb-8 text-center shadow-md">
           <MyQuizzesTitleSwitcher />
         </div>
@@ -116,7 +141,12 @@ const MyQuizzes = () => {
         {loading ? (
           <Spinner />
         ) : memoizedQuizzes.length > 0 ? (
-          <div className="overflow-x-auto">
+          <motion.div
+            className="overflow-x-auto"
+            variants={itemVariants}
+            initial="hidden"
+            animate="visible"
+          >
             <Table hoverable={true} className="min-w-full">
               <Table.Head>
                 <Table.HeadCell className="text-center font-extrabold">
@@ -212,11 +242,12 @@ const MyQuizzes = () => {
                 ))}
               </Table.Body>
             </Table>
-          </div>
+          </motion.div>
         ) : (
           <NoQuizzesAvailable />
         )}
-      </div>
+      </motion.div>
+      {/* Modals for delete confirmation and quiz details */}
       <ConfirmDeleteModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -228,7 +259,7 @@ const MyQuizzes = () => {
         onClose={closeViewModal}
         quiz={selectedQuiz}
       />
-    </div>
+    </motion.div>
   );
 };
 
