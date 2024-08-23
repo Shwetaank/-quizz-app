@@ -1,7 +1,9 @@
 import { FaLinkedin, FaYoutube, FaTwitter } from "react-icons/fa";
 import { FaSuitcase } from "react-icons/fa";
 import { FaSquareInstagram } from "react-icons/fa6";
+import { motion } from "framer-motion"; 
 
+// Array of social media links and icons
 const socials = [
   {
     id: 1,
@@ -40,18 +42,21 @@ const Footer = () => {
     <footer className="w-full h-auto py-4 flex flex-col items-center justify-center px-4 sm:px-8 md:px-12 lg:px-20 xl:px-48 text-xl border-t border-gray-300 shadow-[0_-4px_8px_-2px_rgba(0,0,0,0.3)]">
       <div className="flex flex-col items-center w-full">
         {/* Social icons */}
-        <div className="flex justify-center items-center  w-full">
+        <div className="flex justify-center items-center w-full">
           {socials.map((social) => (
-            <a
+            <motion.a
               key={social.id}
               href={social.link}
               target="_blank"
               rel="noopener noreferrer"
               title={social.name}
-              className="text-4xl  w-full flex justify-center items-center transition-transform transform hover:scale-125 duration-300 hover:text-blue-500"
+              className="text-4xl w-full flex justify-center items-center transition-transform transform hover:scale-125 duration-300 hover:text-blue-500"
+              initial={{ opacity: 0, y: 10 }} // Initial state
+              animate={{ opacity: 1, y: 0 }} // Final state
+              transition={{ duration: 0.5, delay: social.id * 0.1 }} // Animation duration and delay
             >
               {social.icon}
-            </a>
+            </motion.a>
           ))}
         </div>
 

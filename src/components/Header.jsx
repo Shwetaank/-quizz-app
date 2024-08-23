@@ -4,6 +4,7 @@ import { UserButton, useUser } from "@clerk/clerk-react";
 import { Button } from "flowbite-react";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
 import img from "../assets/logo.png";
+import { motion } from "framer-motion"; 
 
 const Header = () => {
   const { isSignedIn } = useUser();
@@ -92,9 +93,14 @@ const Header = () => {
       {/* Buttons for small screens */}
       <div className="flex items-center gap-4 ml-auto sm:hidden">
         {isSignedIn ? (
-          <div className="transform transition-all duration-300 hover:scale-125 mr-4">
+          <motion.div
+            className="transform transition-all duration-300 hover:scale-125 mr-4"
+            initial={{ opacity: 0, y: 10 }} // Initial state
+            animate={{ opacity: 1, y: 0 }} // Final state
+            transition={{ duration: 0.5 }} // Animation duration
+          >
             <UserButton className="shadow-lg border-2 border-transparent hover:border-blue-500" />
-          </div>
+          </motion.div>
         ) : (
           <Link to="/auth/sign-in">
             <Button className="bg-black rounded-md p-2 font-bold">
@@ -117,16 +123,26 @@ const Header = () => {
       <div className="hidden sm:flex items-center gap-20">
         {isSignedIn ? (
           <>
-            <div className="flex items-center gap-20 font-semibold">
+            <motion.div
+              className="flex items-center gap-20 font-semibold"
+              initial={{ opacity: 0, x: -20 }} // Initial state
+              animate={{ opacity: 1, x: 0 }} // Final state
+              transition={{ duration: 0.5 }} // Animation duration
+            >
               {navLinks}
-            </div>
-            <div className="transform transition-all duration-300 hover:scale-125">
+            </motion.div>
+            <motion.div
+              className="transform transition-all duration-300 hover:scale-125"
+              initial={{ opacity: 0, y: 10 }} // Initial state
+              animate={{ opacity: 1, y: 0 }} // Final state
+              transition={{ duration: 0.5 }} // Animation duration
+            >
               <UserButton className="shadow-lg border-2 border-transparent hover:border-blue-500" />
-            </div>
+            </motion.div>
           </>
         ) : (
           <Link to="/auth/sign-in">
-            <Button color="dark" pill >
+            <Button color="dark" pill>
               Login
             </Button>
           </Link>
@@ -135,14 +151,17 @@ const Header = () => {
 
       {/* Dropdown menu for small screens */}
       {isSignedIn && isMenuOpen && (
-        <div
+        <motion.div
           ref={menuRef}
           className="sm:hidden absolute z-40 top-20 left-0 w-full bg-gradient-to-b from-blue-100 to-red-100 shadow-md"
+          initial={{ opacity: 0, y: -20 }} // Initial state
+          animate={{ opacity: 1, y: 0 }} // Final state
+          transition={{ duration: 0.5 }} // Animation duration
         >
           <div className="flex flex-col items-center gap-4 p-4 font-semibold">
             {navLinks}
           </div>
-        </div>
+        </motion.div>
       )}
     </nav>
   );
