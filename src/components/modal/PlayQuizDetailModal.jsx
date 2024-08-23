@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { getQuizTypeLabel } from "../../utils/getQuizTypeLabel";
 
+// Function to calculate time allocation based on the number of questions
 const calculateTimeAllocation = (numQuestions) => {
   if (numQuestions >= 2 && numQuestions <= 5) {
     return 4; // minutes
@@ -21,6 +22,7 @@ const PlayQuizDetailModal = ({ quiz, onClose }) => {
   const navigate = useNavigate();
   const { user } = useUser();
 
+  // Handle quiz start action
   const handleStartQuiz = () => {
     dispatch(setCurrentQuiz(quiz));
     navigate(`/quiz/${quiz.id}`);
@@ -29,7 +31,7 @@ const PlayQuizDetailModal = ({ quiz, onClose }) => {
   // Calculate time allocation based on the number of questions
   const timeAllocation = calculateTimeAllocation(quiz.questions.length);
 
-  // Get the quiz type label
+  // Get the quiz type label from a utility function
   const quizType = getQuizTypeLabel(quiz.type);
 
   return (
@@ -93,6 +95,7 @@ const PlayQuizDetailModal = ({ quiz, onClose }) => {
   );
 };
 
+// Prop types validation
 PlayQuizDetailModal.propTypes = {
   quiz: PropTypes.shape({
     id: PropTypes.string.isRequired,

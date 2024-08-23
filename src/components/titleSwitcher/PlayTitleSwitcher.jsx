@@ -4,6 +4,7 @@ const PlayTitleSwitcher = () => {
   const [titleIndex, setTitleIndex] = useState(0);
   const intervalRef = useRef(null);
 
+  // Array of titles to be displayed
   const titles = [
     "Select Your Next Challenge",
     "Choose a Quiz to Play",
@@ -16,10 +17,12 @@ const PlayTitleSwitcher = () => {
   ];
 
   useEffect(() => {
+    // Set up interval to switch titles
     intervalRef.current = setInterval(() => {
       setTitleIndex((prevIndex) => (prevIndex + 1) % titles.length);
     }, 4000);
 
+    // Cleanup interval on component unmount
     return () => {
       clearInterval(intervalRef.current);
     };
