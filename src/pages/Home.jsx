@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { Card, Button } from "flowbite-react";
@@ -8,6 +9,7 @@ import { HiOutlineArrowRight } from "react-icons/hi";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import SurpriseQuizzModal from "../components/modal/SurpriseQuizzModal";
 
 const cards = [
   {
@@ -35,6 +37,7 @@ const cards = [
 
 const Home = () => {
   const { isSignedIn } = useUser();
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-100 to-red-100">
@@ -53,28 +56,36 @@ const Home = () => {
           engaging quizzes designed to challenge and educate.
         </p>
         <div className="flex flex-col md:flex-row justify-center items-center gap-10">
-          {cards.map(
-            (card, index) =>
-              (card.condition === undefined ||
-                (card.condition && isSignedIn)) && (
-                <Card
-                  key={index}
-                  className="w-full sm:w-full lg:w-1/3 bg-transparent transform transition-transform duration-300 hover:scale-105"
-                >
-                  <img
-                    src={card.imageSrc}
-                    alt={card.title}
-                    className="w-full h-40 object-cover rounded-t-lg"
+          {cards.map((card, index) =>
+            (card.condition === undefined || (card.condition && isSignedIn)) && (
+              <Card
+                key={index}
+                className="w-full sm:w-full lg:w-1/3 bg-transparent transform transition-transform duration-300 hover:scale-105"
+              >
+                <img
+                  src={card.imageSrc}
+                  alt={card.title}
+                  className="w-full h-40 object-cover rounded-t-lg"
+                />
+                <div className="p-4">
+                  <h5 className="text-xl font-bold tracking-tight flex justify-start cursor-pointer hover:underline">
+                    {card.title}
+                  </h5>
+                  <p
+                    className="font-normal text-gray-700 dark:text-gray-400 mt-2 text-justify"
+                    dangerouslySetInnerHTML={{ __html: card.description }}
                   />
-                  <div className="p-4">
-                    <h5 className="text-xl font-bold tracking-tight flex justify-start  cursor-pointer hover:underline">
-                      {card.title}
-                    </h5>
-                    <p
-                      className="font-normal text-gray-700 dark:text-gray-400 mt-2 text-justify"
-                      dangerouslySetInnerHTML={{ __html: card.description }}
-                    />
-                    <div className="mt-8 flex justify-center">
+                  <div className="mt-8 flex justify-center">
+                    {card.to === "/surprise-quiz-form" ? (
+                      <Button
+                        gradientMonochrome="purple"
+                        className="font-bold transition-transform duration-300 transform hover:scale-105 hover:shadow-lg"
+                        onClick={() => setShowModal(true)}
+                      >
+                        Let's Start
+                        <HiOutlineArrowRight className="ml-2 h-5 w-5" />
+                      </Button>
+                    ) : (
                       <Link to={card.to}>
                         <Button
                           gradientMonochrome="purple"
@@ -84,15 +95,17 @@ const Home = () => {
                           <HiOutlineArrowRight className="ml-2 h-5 w-5" />
                         </Button>
                       </Link>
-                    </div>
+                    )}
                   </div>
-                </Card>
-              )
+                </div>
+              </Card>
+            )
           )}
         </div>
       </main>
 
       <Footer />
+      <SurpriseQuizzModal showModal={showModal} setShowModal={setShowModal} />
     </div>
   );
 };

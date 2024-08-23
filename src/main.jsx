@@ -14,6 +14,9 @@ import MyQuizzes from "./pages/MyQuizzes";
 import CreateQuiz from "./pages/CreateQuiz.jsx";
 import QuizPage from "./pages/QuizPage.jsx";
 import ResultPage from "./pages/ResultPage.jsx";
+import QuizSetupForm from "./components/forms/QuizSetupForm .jsx";
+import QuizPlayPage from "./pages/QuizPlayPage.jsx";
+import QuizResultsPage from "./pages/QuizResultsPage.jsx";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -44,6 +47,18 @@ const router = createBrowserRouter([
       {
         path: "/results/:quizId",
         element: <ResultPage />,
+      },
+      {
+        path: "/quiz-setupForm",
+        element: <QuizSetupForm />,
+      },
+      {
+        path: "/quiz-play",
+        element: <QuizPlayPage />,
+      },
+      {
+        path: "/quiz-results",
+        element: <QuizResultsPage />,
       },
     ],
   },

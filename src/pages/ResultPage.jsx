@@ -10,7 +10,7 @@ const ResultPage = () => {
   const { quizId } = useParams();
   const navigate = useNavigate();
   const { user } = useUser();
-  
+
   // Always call hooks
   const quiz = useSelector((state) =>
     state.quiz.quizzes.find((q) => q.id === quizId)
@@ -43,19 +43,23 @@ const ResultPage = () => {
   // Determine feedback, quote, and button based on accuracy
   if (accuracy < 65) {
     feedback = "🚫 You failed the test. Keep trying!";
-    quote = "“Success is not final, failure is not fatal: It is the courage to continue that counts.” — Winston Churchill";
+    quote =
+      "“Success is not final, failure is not fatal: It is the courage to continue that counts.” — Winston Churchill";
   } else if (accuracy < 96) {
     feedback = "👍 Good effort! Keep working to improve.";
-    quote = "“Success is not the key to happiness. Happiness is the key to success. If you love what you are doing, you will be successful.” — Albert Schweitzer";
+    quote =
+      "“Success is not the key to happiness. Happiness is the key to success. If you love what you are doing, you will be successful.” — Albert Schweitzer";
   } else if (accuracy < 100) {
     feedback = "🌟 Excellent job! You did very well.";
-    quote = "“Success is not the result of spontaneous combustion. You must set yourself on fire.” — Arnold H. Glasow";
+    quote =
+      "“Success is not the result of spontaneous combustion. You must set yourself on fire.” — Arnold H. Glasow";
   } else {
     feedback = "🎉 Perfect score! You nailed it!";
-    quote = "“The only limit to our realization of tomorrow is our doubts of today.” — Franklin D. Roosevelt";
+    quote =
+      "“The only limit to our realization of tomorrow is our doubts of today.” — Franklin D. Roosevelt";
     button = (
       <Button
-        onClick={() => navigate("/surprise-quiz")}
+        onClick={() => navigate("/quiz-setupForm")}
         className="mt-4"
         gradientMonochrome="pink"
         icon={FaGift}
@@ -70,7 +74,9 @@ const ResultPage = () => {
     return (
       <div className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl">
         <Card className="w-full bg-transparent max-w-3xl border border-gray-300 rounded-lg shadow-md p-4">
-          <p className="text-lg font-semibold mb-4 text-center">No result found</p>
+          <p className="text-lg font-semibold mb-4 text-center">
+            No result found
+          </p>
         </Card>
       </div>
     );
