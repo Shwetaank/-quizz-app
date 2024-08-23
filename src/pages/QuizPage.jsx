@@ -9,13 +9,35 @@ import { setUserAnswer, setResult, resetQuizState } from "../store/quizSlice";
 import { selectQuizById, selectUserAnswersByQuizId } from "../store/selectors";
 import ResultLoadingSpinner from "../components/spinner/ResultLoadingSpinner";
 import { getQuizTypeLabel } from "../utils/getQuizTypeLabel";
-import { useUser } from "@clerk/clerk-react"; // Import useUser hook
+import { useUser } from "@clerk/clerk-react";
+import { motion } from "framer-motion";
+
+// Animation variants for question transition
+const questionVariants = {
+  initial: (direction) => ({
+    x: direction === 1 ? "100vw" : "-100vw",
+    opacity: 0,
+  }),
+  animate: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction) => ({
+    x: direction === 1 ? "-100vw" : "100vw",
+    opacity: 0,
+  }),
+};
 
 const NoQuestionsAvailable = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="text-center text-lg font-semibold text-gray-700">
+    <motion.div
+      className="text-center text-lg font-semibold text-gray-700"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <p>No questions available at the moment.</p>
       <Button
         onClick={() => navigate("/my-quizzes")}
@@ -23,7 +45,7 @@ const NoQuestionsAvailable = () => {
       >
         View Other Quizzes
       </Button>
-    </div>
+    </motion.div>
   );
 };
 
@@ -38,6 +60,7 @@ const QuizPage = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [lastMinute, setLastMinute] = useState(null);
+  const [direction, setDirection] = useState(0);
 
   const quiz = useSelector((state) => selectQuizById(state, quizId));
   const userAnswers = useSelector((state) =>
@@ -70,7 +93,6 @@ const QuizPage = () => {
           return 0;
         }
 
-      
         if (lastMinute !== null && newMinutes < lastMinute) {
           showAlertMessage(`${newMinutes} minute(s) remaining!`);
         }
@@ -105,6 +127,7 @@ const QuizPage = () => {
   const handleNext = () => {
     if (validateCurrentQuestion()) {
       if (currentQuestionIndex < questions.length - 1) {
+        setDirection(1); // Slide right for next question
         setCurrentQuestionIndex((prev) => prev + 1);
       }
     } else {
@@ -114,6 +137,7 @@ const QuizPage = () => {
 
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
+      setDirection(-1); // Slide left for previous question
       setCurrentQuestionIndex((prev) => prev - 1);
     }
   };
@@ -164,19 +188,34 @@ const QuizPage = () => {
 
   if (!quiz) return <div>Quiz not found</div>;
 
-  // Format the remaining time in minutes and seconds
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
   return (
-    <div className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl">
+    <motion.div
+      className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <Card className="w-full max-w-3xl border border-gray-300 rounded-lg shadow-xl p-4 bg-transparent">
-        {/* Title centered and quiz type below it with border */}
         <div className="text-center">
-          <h1 className="text-2xl sm:text-3xl font-semibold">{quiz.title}</h1>
-          <p className="text-lg font-semibold border-b border-gray-300 pb-2 mb-2 shadow-xl">
+          <motion.h1
+            className="text-2xl sm:text-3xl font-semibold"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            {quiz.title}
+          </motion.h1>
+          <motion.p
+            className="text-lg font-semibold border-b border-gray-300 pb-2 mb-2 shadow-xl"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
             {getQuizTypeLabel(quiz.type)}
-          </p>
+          </motion.p>
           <p className="text-lg font-semibold text-gray-600 text-left mb-2 mt-2">
             Welcome, <strong> {user?.firstName || "User"}</strong>
           </p>
@@ -193,20 +232,37 @@ const QuizPage = () => {
           </p>
         </div>
         {showAlert && (
-          <Alert color="failure" icon={HiInformationCircle}>
-            <span className="font-medium">{alertMessage}</span>
-          </Alert>
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Alert color="failure" icon={HiInformationCircle}>
+              <span className="font-medium">{alertMessage}</span>
+            </Alert>
+          </motion.div>
         )}
         {loading ? (
           <ResultLoadingSpinner />
         ) : (
           <div>
             {questions.length > 0 ? (
-              <div>
+              <motion.div
+                variants={questionVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                custom={direction}
+              >
                 <div className="mb-4">
-                  <p className="font-bold text-lg flex justify-center items-center border-b border-gray-300 pb-4 shadow-md">
+                  <motion.p
+                    className="font-bold text-lg flex justify-center items-center border-b border-gray-300 pb-4 shadow-md"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
                     {currentQuestion.question}
-                  </p>
+                  </motion.p>
                   {currentQuestion.type === "mcq-single" ? (
                     <div className="mt-4">
                       {currentQuestion.options.map((option, index) => (
@@ -234,38 +290,56 @@ const QuizPage = () => {
                   )}
                 </div>
                 <div className="flex justify-between mt-4">
-                  <Button
-                    gradientMonochrome="purple"
-                    onClick={handlePrevious}
-                    disabled={currentQuestionIndex === 0}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3, delay: 0.2 }}
                   >
-                    Previous
-                  </Button>
-                  <Button
-                    gradientMonochrome="purple"
-                    onClick={handleNext}
-                    disabled={currentQuestionIndex === questions.length - 1}
+                    <Button
+                      gradientMonochrome="purple"
+                      onClick={handlePrevious}
+                      disabled={currentQuestionIndex === 0}
+                    >
+                      Previous
+                    </Button>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3, delay: 0.4 }}
                   >
-                    Next
-                  </Button>
+                    <Button
+                      gradientMonochrome="purple"
+                      onClick={handleNext}
+                      disabled={currentQuestionIndex === questions.length - 1}
+                    >
+                      Next
+                    </Button>
+                  </motion.div>
                 </div>
                 <div className="mt-4 flex justify-center">
-                  <Button
-                    gradientMonochrome="pink"
-                    onClick={handleSubmit}
-                    disabled={timeLeft === 0}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3, delay: 0.6 }}
                   >
-                    Submit
-                  </Button>
+                    <Button
+                      gradientMonochrome="pink"
+                      onClick={handleSubmit}
+                      disabled={timeLeft === 0}
+                    >
+                      Submit
+                    </Button>
+                  </motion.div>
                 </div>
-              </div>
+              </motion.div>
             ) : (
               <NoQuestionsAvailable />
             )}
           </div>
         )}
       </Card>
-    </div>
+    </motion.div>
   );
 };
 

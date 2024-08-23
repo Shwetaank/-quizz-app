@@ -1,10 +1,12 @@
 import { Spinner as FlowbiteSpinner } from "flowbite-react";
 
+// Component for displaying a loading spinner with a message
 const ResultLoadingSpinner = () => (
   <div
     role="status"
     className="flex flex-col items-center justify-center w-full py-8 bg-transparent rounded-lg p-4 sm:p-6 md:p-8"
   >
+    {/* Spinner from Flowbite with custom styles */}
     <FlowbiteSpinner
       aria-hidden="true"
       className="w-10 h-10 sm:w-14 sm:h-14 text-gray-200 animate-spin dark:text-gray-600 fill-purple-600"
@@ -21,6 +23,7 @@ const ResultLoadingSpinner = () => (
         fill="currentFill"
       />
     </FlowbiteSpinner>
+    {/* Message displayed below the spinner */}
     <p className="mt-4 text-sm sm:text-base md:text-lg font-semibold text-gray-700 flex items-center space-x-2 text-center">
       <span>📝</span>
       <span>Calculating your score... Hang tight!</span>
