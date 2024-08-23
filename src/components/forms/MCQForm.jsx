@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import { Button, TextInput, Select, Alert } from "flowbite-react";
 import { useState } from "react";
-
 import { HiOutlineTrash } from "react-icons/hi";
 
 const MCQForm = ({
@@ -39,32 +38,35 @@ const MCQForm = ({
   const handleCorrectAnswerChange = (e) => {
     setCurrentQuestion((prev) => ({
       ...prev,
-      correctAnswer: e.target.value, // Store the actual value
+      correctAnswer: e.target.value,
     }));
   };
 
   return (
     <div className="flex flex-col items-center p-6 border rounded-lg shadow-lg bg-white w-full max-w-4xl mx-auto">
+      {/* Input for the question */}
       <TextInput
         type="text"
-        placeholder="Enter question (max 20 characters)"
+        placeholder="Enter question (max 100 characters)"
         value={currentQuestion.question}
         onChange={(e) =>
           setCurrentQuestion((prev) => ({
             ...prev,
-            question: e.target.value.slice(0, 20),
+            question: e.target.value.slice(0, 100),
           }))
         }
         required
         className="mb-4 w-full"
       />
 
+      {/* Display warning message if any */}
       {warningMessage && (
         <Alert color="failure" className="mb-4">
           {warningMessage}
         </Alert>
       )}
 
+      {/* Options list with input fields and delete buttons */}
       <div className="flex flex-col space-y-4 w-full">
         {options.map((option, index) => (
           <div key={index} className="flex items-center space-x-2 w-full">
@@ -86,6 +88,7 @@ const MCQForm = ({
         ))}
       </div>
 
+      {/* Button to add a new option */}
       <Button
         gradientMonochrome="purple"
         onClick={handleAddOption}
@@ -95,6 +98,7 @@ const MCQForm = ({
         Add Option
       </Button>
 
+      {/* Dropdown for selecting the correct answer */}
       <Select
         name="correctAnswer"
         value={correctAnswer}

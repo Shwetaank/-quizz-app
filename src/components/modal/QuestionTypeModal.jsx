@@ -6,16 +6,19 @@ const QuestionTypeModal = ({ isOpen, onClose, onSelectType, selectedType }) => {
   const modalRef = useRef(null);
 
   useEffect(() => {
+    // Function to handle clicks outside the modal
     function handleClickOutside(event) {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
         onClose();
       }
     }
 
+    // Add event listener if the modal is open
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
+    // Clean up event listener when the modal is closed
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
@@ -36,6 +39,7 @@ const QuestionTypeModal = ({ isOpen, onClose, onSelectType, selectedType }) => {
         </Modal.Header>
         <Modal.Body className="py-6">
           <div className="flex flex-col gap-4">
+            {/* Button for selecting MCQ (Single Correct) */}
             <Button
               gradientMonochrome="purple"
               onClick={() => onSelectType("mcq-single")}
@@ -44,6 +48,7 @@ const QuestionTypeModal = ({ isOpen, onClose, onSelectType, selectedType }) => {
             >
               MCQ (Single Correct)
             </Button>
+            {/* Button for selecting Short Answer */}
             <Button
               gradientMonochrome="purple"
               onClick={() => onSelectType("short-answer")}
@@ -59,6 +64,7 @@ const QuestionTypeModal = ({ isOpen, onClose, onSelectType, selectedType }) => {
   );
 };
 
+// PropTypes for type-checking props
 QuestionTypeModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,

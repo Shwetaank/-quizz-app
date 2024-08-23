@@ -4,6 +4,7 @@ import { TextInput } from "flowbite-react";
 const ShortAnswerForm = ({ question, answer, setCurrentQuestion }) => {
   return (
     <div className="flex flex-col items-center p-6 border rounded-lg shadow-lg bg-white w-full max-w-4xl mx-auto">
+      {/* Input for the question text */}
       <TextInput
         type="text"
         placeholder="Enter the question"
@@ -17,6 +18,7 @@ const ShortAnswerForm = ({ question, answer, setCurrentQuestion }) => {
         required
         className="mb-4 w-full"
       />
+      {/* Input for the short answer with a character limit */}
       <TextInput
         type="text"
         placeholder="Enter the short answer (max 10 characters)"
@@ -24,7 +26,7 @@ const ShortAnswerForm = ({ question, answer, setCurrentQuestion }) => {
         onChange={(e) =>
           setCurrentQuestion((prev) => ({
             ...prev,
-            answer: e.target.value.slice(0, 10),
+            answer: e.target.value.slice(0, 10), // Limit answer to 10 characters
           }))
         }
         required
@@ -34,6 +36,7 @@ const ShortAnswerForm = ({ question, answer, setCurrentQuestion }) => {
   );
 };
 
+// PropTypes for validating component props
 ShortAnswerForm.propTypes = {
   question: PropTypes.string.isRequired,
   answer: PropTypes.string.isRequired,

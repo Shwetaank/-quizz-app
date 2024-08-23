@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Button, Alert, TextInput, Textarea } from "flowbite-react";
@@ -9,10 +10,26 @@ import MCQForm from "../components/forms/MCQForm";
 import ShortAnswerForm from "../components/forms/ShortAnswerForm";
 import TitleSwitcher from "../components/titleSwitcher/TitleSwitcher";
 
+// Define motion variants for animation
+const containerVariants = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } },
+};
+
+const alertVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.4 } },
+};
+
+const buttonVariants = {
+  hover: { scale: 1.05, boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" },
+  tap: { scale: 0.95 },
+};
+
 const CreateQuiz = () => {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [selectedQuestionType, setSelectedQuestionType] = useState("");
-  const [showCreateQuizButton, setShowCreateQuizButton] = useState(true); 
+  const [showCreateQuizButton, setShowCreateQuizButton] = useState(true);
   const [quizDetails, setQuizDetails] = useState({
     title: "",
     description: "",
@@ -27,6 +44,7 @@ const CreateQuiz = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertType, setAlertType] = useState("failure");
   const [showAlert, setShowAlert] = useState(false);
+
   const dispatch = useDispatch();
   const currentQuestionNumber = questions.length + 1;
 
@@ -45,7 +63,7 @@ const CreateQuiz = () => {
   const handleQuestionTypeChange = (type) => {
     setSelectedQuestionType(type);
     setIsModalOpen(false);
-    setShowCreateQuizButton(false); // Hide button once a question type is selected
+    setShowCreateQuizButton(false);
   };
 
   const handleSaveQuestion = () => {
@@ -139,7 +157,6 @@ const CreateQuiz = () => {
       })
     );
 
-    // Resetting form state after quiz submission
     setQuizDetails({
       title: "",
       description: "",
@@ -156,17 +173,29 @@ const CreateQuiz = () => {
   };
 
   return (
-    <div className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl">
+    <motion.div
+      className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <main className="w-full max-w-7xl border border-gray-300 rounded-lg shadow-md p-8">
         <TitleSwitcher />
 
         {showAlert && alertMessage && (
-          <Alert color={alertType} icon={HiInformationCircle} className="mb-4">
-            <span className="font-medium">
-              {alertType === "success" ? "Success!" : "Error!"}
-            </span>{" "}
-            {alertMessage}
-          </Alert>
+          <motion.div
+            className="mb-4"
+            variants={alertVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <Alert color={alertType} icon={HiInformationCircle}>
+              <span className="font-medium">
+                {alertType === "success" ? "Success!" : "Error!"}
+              </span>{" "}
+              {alertMessage}
+            </Alert>
+          </motion.div>
         )}
 
         <QuestionTypeModal
@@ -177,18 +206,28 @@ const CreateQuiz = () => {
         />
 
         {showCreateQuizButton && (
-          <div className="w-full flex justify-end mt-4">
+          <motion.div
+            className="w-full flex justify-end mt-4"
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+          >
             <Button
               onClick={() => setIsModalOpen(true)}
               gradientMonochrome="purple"
             >
               Create Your Quiz
             </Button>
-          </div>
+          </motion.div>
         )}
 
         {selectedQuestionType && (
-          <div className="flex flex-col items-center">
+          <motion.div
+            className="flex flex-col items-center"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             <h2 className="mb-4 text-2xl font-semibold">
               {`${selectedQuestionType
                 .replace("-", " ")
@@ -262,25 +301,45 @@ const CreateQuiz = () => {
               />
             )}
 
-            <div className="flex justify-between w-full mt-8 space-x-4">
-              <Button onClick={handleSaveQuestion} gradientMonochrome="purple">
-                Save & Next
-              </Button>
-              <Button
-                onClick={handleSubmitQuiz}
-                gradientMonochrome="purple"
-                disabled={questions.length === 0}
-                className={`${
-                  questions.length === 0 ? "cursor-not-allowed" : ""
-                }`}
+            <motion.div
+              className="flex justify-between w-full mt-8 space-x-4"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <motion.div
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
               >
-                Submit Quiz
-              </Button>
-            </div>
-          </div>
+                <Button
+                  onClick={handleSaveQuestion}
+                  gradientMonochrome="purple"
+                >
+                  Save & Next
+                </Button>
+              </motion.div>
+              <motion.div
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+              >
+                <Button
+                  onClick={handleSubmitQuiz}
+                  gradientMonochrome="purple"
+                  disabled={questions.length === 0}
+                  className={`${
+                    questions.length === 0 ? "cursor-not-allowed" : ""
+                  }`}
+                >
+                  Submit Quiz
+                </Button>
+              </motion.div>
+            </motion.div>
+          </motion.div>
         )}
       </main>
-    </div>
+    </motion.div>
   );
 };
 
