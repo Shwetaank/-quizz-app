@@ -1,10 +1,15 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, Alert } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
+import { decode } from "html-entities";
+import { useUser } from "@clerk/clerk-react";
+import { motion } from "framer-motion";
+import ResultLoadingSpinner from "../components/spinner/ResultLoadingSpinner";
 
 const QuizPlayPage = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [quizData, setQuizData] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
@@ -12,6 +17,7 @@ const QuizPlayPage = () => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const timerRef = useRef(null);
 
   const questions = useMemo(() => quizData || [], [quizData]);
   const currentQuestion = questions[currentQuestionIndex];
@@ -25,10 +31,10 @@ const QuizPlayPage = () => {
       const initialTime = totalQuestions <= 5 ? 4 * 60 : 8 * 60;
       setTimeLeft(initialTime);
 
-      const timer = setInterval(() => {
+      timerRef.current = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 0) {
-            clearInterval(timer);
+            clearInterval(timerRef.current);
             handleSubmit();
             return 0;
           }
@@ -36,7 +42,7 @@ const QuizPlayPage = () => {
         });
       }, 1000);
 
-      return () => clearInterval(timer);
+      return () => clearInterval(timerRef.current);
     } else {
       navigate("/quiz-setup");
     }
@@ -107,6 +113,7 @@ const QuizPlayPage = () => {
       }
     });
     localStorage.setItem("quizScore", score);
+    localStorage.setItem("totalQuestions", questions.length); // Save totalQuestions for result page
   };
 
   const showAlertMessage = (message) => {
@@ -115,7 +122,7 @@ const QuizPlayPage = () => {
     setTimeout(() => setShowAlert(false), 4000);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <ResultLoadingSpinner />;
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
@@ -123,14 +130,19 @@ const QuizPlayPage = () => {
   return (
     <div className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl">
       <Card className="w-full max-w-3xl border border-gray-300 rounded-lg shadow-xl p-4 bg-transparent">
-        <div className="text-center">
-          <h1 className="text-2xl sm:text-3xl font-semibold">Quiz</h1>
-          <p className="text-lg font-semibold border-b border-gray-300 pb-2 mb-2 shadow-xl">
-            Question {currentQuestionIndex + 1} of {questions.length}
+        <div className="text-center mb-4">
+          <h1 className="text-2xl sm:text-3xl font-semibold mb-2">
+            {user ? `Hello, ${user.firstName}!` : "Hello!"}
+          </h1>
+          <p className="text-md font-thin">
+            Quiz Category: {currentQuestion ? decode(currentQuestion.type) : "N/A"}
           </p>
         </div>
         <div className="flex justify-between items-center mb-4 border-b border-gray-300 pb-4 shadow-md">
           <p className="text-lg font-semibold ml-4">
+            Question {currentQuestionIndex + 1} of {questions.length}
+          </p>
+          <p className="text-sm font-semibold mr-4">
             Time Left:
             <span className="text-blue-500 ml-2">
               {minutes} M : {seconds < 10 ? `0${seconds}` : seconds} S
@@ -145,7 +157,7 @@ const QuizPlayPage = () => {
         {currentQuestion ? (
           <div className="mb-4">
             <p className="font-bold text-lg flex justify-center items-center border-b border-gray-300 pb-4 shadow-md">
-              {currentQuestion.question}
+              {decode(currentQuestion.question)}
             </p>
             {currentQuestion.type === "multiple" ? (
               <div className="mt-4">
@@ -153,7 +165,13 @@ const QuizPlayPage = () => {
                   .concat(currentQuestion.correct_answer)
                   .sort()
                   .map((option, index) => (
-                    <label key={index} className="block mt-2">
+                    <motion.label
+                      key={index}
+                      className={`block mt-2 cursor-pointer ${userAnswers[currentQuestionIndex] === option ? 'text-blue-500' : ''}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
                       <input
                         type="radio"
                         name={`question-${currentQuestionIndex}`}
@@ -162,9 +180,44 @@ const QuizPlayPage = () => {
                         onChange={() => handleAnswerChange(option)}
                         className="mr-2"
                       />
-                      {option}
-                    </label>
+                      {decode(option)}
+                    </motion.label>
                   ))}
+              </div>
+            ) : currentQuestion.type === "boolean" ? (
+              <div className="mt-4">
+                <motion.label
+                  className={`block mt-2 cursor-pointer ${userAnswers[currentQuestionIndex] === "true" ? 'text-blue-500' : ''}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <input
+                    type="radio"
+                    name={`question-${currentQuestionIndex}`}
+                    value="true"
+                    checked={userAnswers[currentQuestionIndex] === "true"}
+                    onChange={() => handleAnswerChange("true")}
+                    className="mr-2"
+                  />
+                  True
+                </motion.label>
+                <motion.label
+                  className={`block mt-2 cursor-pointer ${userAnswers[currentQuestionIndex] === "false" ? 'text-blue-500' : ''}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <input
+                    type="radio"
+                    name={`question-${currentQuestionIndex}`}
+                    value="false"
+                    checked={userAnswers[currentQuestionIndex] === "false"}
+                    onChange={() => handleAnswerChange("false")}
+                    className="mr-2"
+                  />
+                  False
+                </motion.label>
               </div>
             ) : (
               <input
