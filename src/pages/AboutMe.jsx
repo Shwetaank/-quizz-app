@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { FaJs, FaReact, FaNodeJs, FaGithub } from "react-icons/fa";
 import {
   SiTailwindcss,
@@ -10,6 +11,27 @@ import {
 } from "react-icons/si";
 import profilePic from "../assets/profile-pic.jpg";
 import AboutTitleSwitcher from "../components/titleSwitcher/AboutTitleSwitcher";
+
+// Animation variants
+const container = {
+  hidden: { opacity: 1, scale: 0 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      delayChildren: 0.3,
+      staggerChildren: 0.2
+    }
+  }
+}
+
+const item = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1
+  }
+}
 
 // Skill icons and labels
 const skills = [
@@ -66,17 +88,27 @@ const projects = [
 const AboutMe = () => (
   <div className="w-full h-auto py-8 flex flex-col items-center justify-center px-4 sm:px-8 text-xl">
     <div className="w-full max-w-7xl border border-gray-300 rounded-lg shadow-md">
-      <div className="text-2xl sm:text-4xl font-semibold mb-8 text-center shadow-md">
+      {/* Title Section */}
+      <motion.div
+        className="text-2xl sm:text-4xl font-semibold mb-8 text-center shadow-md"
+        variants={container}
+        initial="hidden"
+        animate="visible"
+      >
         <AboutTitleSwitcher />
-      </div>
+      </motion.div>
+
+      {/* Profile and Skills Sections */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 p-4">
         {/* Profile Section */}
         <div className="flex flex-col items-center sm:items-start text-center sm:text-left px-4 border-r border-gray-300">
           <div className="flex flex-col items-center">
-            <img
+            <motion.img
               src={profilePic}
               alt="Profile picture of Shwetank Morey"
-              className="w-32 h-32 sm:w-40 sm:h-40 rounded-full mb-4 shadow-lg border-8 border-white transition-transform transition-border duration-500 ease-in-out hover:scale-105 hover:border-transparent cursor-pointer hover:border-0"
+              className="w-32 h-32 sm:w-40 sm:h-40 rounded-full mb-4 shadow-lg border-8 border-white cursor-pointer"
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.3 }}
             />
             <p className="text-lg sm:text-xl text-justify">
               Hello, I&apos;m <strong>Shwetank</strong>, a Full Stack Engineer
@@ -89,23 +121,29 @@ const AboutMe = () => (
         </div>
 
         {/* Skills Section */}
-        <div className="flex flex-col items-center justify-center text-center px-4">
+        <motion.div
+          className="flex flex-col items-center justify-center text-center px-4"
+          variants={container}
+          initial="hidden"
+          animate="visible"
+        >
           <h2 className="text-lg sm:text-2xl font-semibold mb-8">My Skills</h2>
           <div className="flex flex-wrap justify-center items-center border border-gray-300 rounded-lg shadow-md p-4">
             {skills.map(({ icon: Icon, label }, index) => (
-              <div
+              <motion.div
                 key={index}
                 className="flex flex-col items-center py-2 mx-4 mb-6 sm:mb-8"
+                variants={item}
               >
                 <Icon
-                  className="text-4xl w-full flex justify-center items-center transition-transform transform hover:scale-125 duration-300 hover:text-blue-500 cursor-pointer"
+                  className="text-4xl w-full flex justify-center items-center"
                   title={label}
                 />
                 <p className="text-sm sm:text-base mt-2">{label}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
 
@@ -114,12 +152,18 @@ const AboutMe = () => (
       <h2 className="text-2xl sm:text-3xl font-semibold mb-6 p-4 border-b border-gray-300 text-center">
         About These Projects
       </h2>
-      <div className="flex justify-center p-4">
+      <motion.div
+        className="flex justify-center p-4"
+        variants={container}
+        initial="hidden"
+        animate="visible"
+      >
         <div className="w-full flex flex-col space-y-8">
           {projects.map((project, index) => (
-            <div
+            <motion.div
               key={index}
               className="border border-gray-300 rounded-lg shadow-lg p-4 w-full text-justify"
+              variants={item}
             >
               <h3 className="text-xl font-semibold mb-2 text-center">
                 {project.name}
@@ -207,10 +251,10 @@ const AboutMe = () => (
                   <FaGithub className="ml-2 text-4xl transition-transform transform hover:scale-125 duration-300" />
                 </a>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </div>
   </div>
 );
