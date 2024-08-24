@@ -56,9 +56,13 @@ The AlmaBetter Quiz App provides an engaging platform for users to create 📝, 
 
 ## Demo 🎥
 
-Check out the demo video to see the AlmaBetter Quiz App in action:
+Check out the demo video to see the AlmaBetter Quiz App in action:-
+One of Many Feature Like Surpirse Quizz-
 
-[Watch Demo](https://example.com/demo-video)
+
+https://github.com/user-attachments/assets/a8d25773-97b1-47ce-a160-cd1cc593a47d
+
+
 
 ## Installation ⚙️
 
