@@ -22,6 +22,8 @@ A dynamic and responsive quiz platform 🎯 tailored for AlmaBetter Capstone Pro
 - [Usage](#usage-🚀)
 - [Technologies Used](#technologies-used-💻)
 - [Contributing](#contributing-🤝)
+- [Problem Statement](#problem-statement-📋)
+- [Future Scope](#future-scope-🚀)
 - [License](#license-📜)
 - [Credits](#credits-🙌)
 - [Contact](#contact-📞)
